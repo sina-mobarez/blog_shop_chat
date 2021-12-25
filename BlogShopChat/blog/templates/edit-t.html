@@ -1,0 +1,32 @@
+{% extends "base_form.html" %}
+{% block content %}
+<div class="row text-center">
+    <div class="col-md-12 mt-5 mb-5 pb-5">
+        <div class="shadow-box-example hoverable flex-center">
+<article>
+    {% if user.is_authenticated %}
+    <h3>اصلاح تگ</h3>
+    <br>
+    <br>
+    <form action="" method="POST">
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="form-group">
+          {{ field.errors }}
+          <label>{{ field.label_tag }}</label>
+          <p>{{ field }}</p>
+      </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-primary">ثبت کردن</button>
+      <button type="reset" class="btn btn-primary">پاک کردن فرم</button>
+  </form>
+
+    {% endif %}
+
+          </article>
+        </div>
+    </div>
+
+</div>
+
+          {% endblock content %}

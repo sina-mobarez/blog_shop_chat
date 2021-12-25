@@ -1,0 +1,38 @@
+{% extends "base_weblog.html" %}
+{% block title %}
+Posts
+{% endblock title %}
+{% block content %}
+        <article>
+           <h2>{{tag.name}} : </h2>
+				</article>
+          {% for post in tag.post_set.all %}
+
+        <article>
+					<h2>{{post.title}}</h2>
+          <br>
+          <p>Written by : <b>{{post.posted_by}}</b> on <b>{{post.post_date}}</b></p>
+          <br>
+          <br>
+					<p>{{ post.bodytext|truncatewords:20 }}</p>
+          <br>
+          <p><a href={{ post.get_absolute_url }}>read more</a></p>
+				</article>
+                               
+
+
+
+
+          {% endfor %}
+
+{% endblock content %}
+
+{% block name-side %} Tags {% endblock name-side %}
+
+{% block sidebar %}
+  {% for t in tag_all %}
+    <div style="background: #344; min-height: 0; margin: 10px auto; padding: 30px 10px; text-align: center; color: #FFF;" !important> <a href="{% url 'post-tag' t.id %}" style="color: white;;  text-decoration: none;" !important>{{t.name}}</a></div>
+  {% endfor %}
+{% endblock sidebar %}
+
+

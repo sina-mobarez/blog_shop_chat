@@ -1,0 +1,66 @@
+{% extends "base_form.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="container">
+    <div class="row text-center">
+        <div class="col-md-12 mb-4">
+            <div class="col-12">
+    <h1>اصلاح کردن</h1>
+    <hr>
+    <br>
+    <br>
+    <form method="POST">
+        <div class="row">
+            {% csrf_token %}
+            <div class="col-md-6">
+                <div class="form-group"> 
+                    <label for="InputUser">عنوان :</label>
+                    {{ form.title|attr:"rows:20"|attr:"cols:20"|attr:"class:form-control"|attr:"id:InputUser" }}
+                    <small id="UserlHelp" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group"> 
+                    <label for="pic">عکس :</label>
+                    {{ form.pic|attr:"rows:20"|attr:"cols:20"|attr:"class:form-control"|attr:"id:pic"|attr:"type:file"}}
+                    <small id="UserlHelp" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group"> 
+                    <label for="cat">دسته بندی :</label>
+                    {{ form.category|attr:"rows:20"|attr:"cols:20"|attr:"class:form-control"|attr:"id:cat"|attr:"type:select"}}
+                    <small id="UserlHelp" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group"> 
+                    <label for="tag">تگ :</label>
+                    {{ form.tag|attr:"rows:20"|attr:"cols:20"|attr:"class:form-control"|attr:"id:tag"|attr:"type:select"}}
+                    <small id="UserlHelp" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group"> 
+                    <label for="status">وضعیت :</label>
+                    {{ form.status|attr:"rows:20"|attr:"cols:20"|attr:"class:form-control"|attr:"id:status"|attr:"type:select"}}
+                    <small id="UserlHelp" class="form-text text-muted"></small>
+                </div>
+            </div>
+            <div class="col-md-6">
+                    <div class="form-group"> 
+                        <label for="bodytext">متن :</label>
+                        {{ form.bodytext|attr:"rows:20"|attr:"cols:25"|attr:"class:form-control"|attr:"id:bodytext"|attr:"type:textarea"}}
+                        <small id="UserlHelp" class="form-text text-muted"></small>
+                    </div>
+            </div>
+        </div>
+
+        <div class="row mb-4 mt-5">
+            <div class="col-12 mb-4 mt-5">
+                <div class="col-12 mb-4"><button type="submit" style="width: 100%;" class="btn btn-primary">ثبت کردن تغییرات</button></div>
+            </div>
+        </div>
+
+
+
+    </form>
+</div>
+</div>
+</div>
+</div>
+{% endblock content %}
+

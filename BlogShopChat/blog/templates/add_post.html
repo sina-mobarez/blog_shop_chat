@@ -1,0 +1,66 @@
+{% extends "base_weblog.html" %}
+{% load widget_tweaks %}
+{% block content %}
+<div class="container">
+
+<h1 class="text-center mt-5">New Post</h1>
+<hr>
+<form action="" method="post" enctype="multipart/form-data">
+<div class="row">
+    <div class="col-md-6">
+        
+        <div class="form-group"> 
+            <label for="Input">{{ form.title_label }}</label>
+            {{ form.title|attr:"rows:20"|attr:"cols:20"|attr:"class:form-control"|attr:"placeholder:title"|attr:"id:Input" }}
+            <small id="UserlHelp" class="form-text text-muted"></small>
+        </div>
+        <div class="form-group"> 
+            <label for="Input">select your image</label>
+        </br>
+            {{ form.pic }}
+            <small id="UserlHelp" class="form-text text-muted"></small>
+        </div>
+        <div class="form-group"> 
+            <label for="Input">select your Categories</label>
+        </br>
+
+            {{ form.category|attr:"rows:20"|attr:"cols:20"|attr:"type:select"|attr:"class:form-control"|attr:"placeholder:description"|attr:"id:Input" }}
+            <small id="UserlHelp" class="form-text text-muted"></small>
+        </div>
+        <div class="form-group"> 
+            <label for="Input">Status</label>
+        </br>
+
+            {{ form.status|attr:"rows:20"|attr:"cols:20"|attr:"type:select"|attr:"class:form-control"|attr:"placeholder:description"|attr:"id:Input" }}
+            <small id="UserlHelp" class="form-text text-muted"></small>
+        </div>
+        <div class="form-group"> 
+            <label for="Input">select your Tags</label>
+        </br>
+
+            {{ form.tag|attr:"rows:20"|attr:"cols:20"|attr:"type:select"|attr:"class:form-control"|attr:"placeholder:description"|attr:"id:Input" }}
+            <small id="UserlHelp" class="form-text text-muted"></small>
+        </div>
+
+    </div>
+    <div class="col-md-6">
+        <div class="form-group"> 
+            <label for="Input">{{ form.bodytext_label }}</label>
+            {{ form.bodytext|attr:"rows:20"|attr:"cols:20"|attr:"class:form-control"|attr:"placeholder:description"|attr:"id:Input" }}
+            <small id="UserlHelp" class="form-text text-muted"></small>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</div>
+{% csrf_token %}
+</form>
+</div>
+{% endblock content %}
+
+{% block name-side %} Categories {% endblock name-side %}
+
+{% block sidebar %}
+  {% for cat in category %}
+    <div style="background: #344; min-height: 0; margin: 10px auto; padding: 30px 10px; text-align: center; color: #FFF;" !important> <a href="{{cat.get_absolute_url}}" style="color: white;;  text-decoration: none;" !important>{{cat.name}}</a></div>
+  {% endfor %}
+{% endblock sidebar %}

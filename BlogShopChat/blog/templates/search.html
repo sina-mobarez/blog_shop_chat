@@ -1,0 +1,81 @@
+{% extends "base_weblog.html" %}
+{% block title %}
+search
+{% endblock title %}
+{% block content %}
+{% if posts %}
+        <article>
+            {% if searched %}
+           <h4> You search for {{searched}}</h4>
+           <br><br>
+           {% endif %}
+
+            <p style="float-right"><a href="{% url 'new_post' %}">new post</a></p>
+            <br><br>
+            <p style="float-right"><a href="{% url 'edit_profile' %}">Edit Profile</a></p>
+            <br><br>
+            {% if posts %}
+           <h2>find this Posts with title : </h2>
+				</article>
+          {% for post in posts %}
+
+        <article>
+					<h2>{{post.title}}</h2>
+          <br>
+          <p>Written by : <b>{{post.posted_by}}</b> on <b>{{post.post_date}}</b></p>
+          <br>
+          <br>
+					<p>{{ post.bodytext|truncatewords:20 }}</p>
+          <br>
+          <p><a href={{ post.get_absolute_url }}>read more</a></p>
+				</article>
+                               
+
+
+
+
+          {% endfor %}
+          {% endif %}
+        </article>
+          {% if posts %}
+          <article>
+          <h2>find this Posts with body : </h2>
+               </article>
+         {% for post in postss %}
+
+       <article>
+                   <h2>{{post.title}}</h2>
+         <br>
+         <p>Written by : <b>{{post.posted_by}}</b> on <b>{{post.post_date}}</b></p>
+         <br>
+         <br>
+                   <p>{{ post.bodytext|truncatewords:20 }}</p>
+         <br>
+         <p><a href={{ post.get_absolute_url }}>read more</a></p>
+               </article>
+                              
+
+
+
+
+         {% endfor %}
+         {% endif %}
+        </article>
+
+{% else %}
+<article>
+    <h4> You search for {{searched}}</h4>
+    <p> Nothing Found </p>
+</article>
+{% endif %}
+{% endblock content %}
+
+{% block name-side %} Categories {% endblock name-side %}
+
+{% block sidebar %}
+  {% for cat in category %}
+    <div style="background: #344; min-height: 0; margin: 10px auto; padding: 30px 10px; text-align: center; color: #FFF;" !important> <a href="{{cat.get_absolute_url}}" style="color: white;;  text-decoration: none;" !important>{{cat.name}}</a></div>
+  {% endfor %}
+{% endblock sidebar %}
+
+

@@ -1,0 +1,99 @@
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{% block title %}{% endblock title %}</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap-rtl.css' %}" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="{% static 'Scripts/jquery-1.10.2.min.js' %}"></script>
+    <script src="{% static 'Scripts/bootstrap-rtl.js' %}"></script>
+</head>
+
+<body>
+
+
+	{% if messages %}
+    {% for message in messages %}
+		{% if message.tags %}
+			<div class="alert alert-{{ message.tags }}alert-dismissible fade show" role="alert">
+		{% endif %}
+  			<strong> </strong> {{ message }}
+  			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    		<span aria-hidden="true">&times;</span>
+  			</button>
+			</div>
+	{% endfor %}
+	{% endif %}
+
+
+    <div class="headder">
+        <h1>{% block header %}{% endblock header %}</h1>
+    </div>
+    <div class="container">
+        <div id="header" class="row">
+            <nav class="navbar navbar-inverse navbar-fixed-top">
+                <div class="container-fluid">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                      <span class="sr-only">Toggle navigation</span>
+                      <span class="icon-bar"></span>
+                      <span class="icon-bar"></span>
+                      <span class="icon-bar"></span>
+                    </button>
+                        <a class="navbar-brand" href="{% url 'post_list' %}">بلاگ</a>
+                    </div>
+
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav">
+                            <li class="active"><a href="{% url 'post_list' %}">صفحه ی اصلی<span class="sr-only">(current)</span></a></li>
+                            <li><a href="{% url 'contact' %}">تماس با ما</a></li>
+							
+							{% if user.is_authenticated %}
+                            <li><a href="{% url 'logout' %}">خارج شدن</a></li>
+                            <li><a href="{% url 'dashboard' %}">داشبورد</a></li>
+							{% else %}
+                            <li><a href="{% url 'signup' %}">ثبت نام</a></li>
+                            <li><a href="{% url 'login' %}">وارد شدن</a></li>
+							{% endif %}
+                            <li><a href="{% url 'contact' %}">تماس با ما</a></li>
+                        </ul>
+
+                    </div>
+                    <!-- /.navbar-collapse -->
+                </div>
+                <!-- /.container-fluid -->
+            </nav>
+        </div>
+        <div class="row" style="margin-top: 62px">
+
+            <div id="content" class="col-lg-8 col-md-9 col-sm-6 col-xs-12 pull-left">
+
+			{% block slider %}{% endblock slider %}
+
+			{% block content %}{% endblock content %}
+
+            </div>
+            <div class="col-lg-4 col-md-3 col-sm-6 col-xs-12 pull-right" id="sidebar">
+
+			{% block sidebar %}{% endblock sidebar %}
+
+            </div>
+
+        </div>
+        <div id="footer" class="row">
+            <div class="container px-4 px-lg-5 col-md-12 ">
+                <div class="small text-center text-muted" id="foot">کلیه حقوق این سایت متعلق به همه میباشد</div>
+            </div>
+        </div>
+    </div>
+
+	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+</body>
+{% include "messages.html" %}
+</html>
