@@ -3,39 +3,39 @@
 {% block content %}
 <div class="container">
 
-<h1 class="text-center mt-5">New Post</h1>
+<h1 class="text-center mt-5">ایجاد پست جدید</h1>
 <hr>
 <form action="" method="post" enctype="multipart/form-data">
 <div class="row">
     <div class="col-md-6">
         
         <div class="form-group"> 
-            <label for="Input">{{ form.title_label }}</label>
+            <label for="Input">عنوان :</label>
             {{ form.title|attr:"rows:20"|attr:"cols:20"|attr:"class:form-control"|attr:"placeholder:title"|attr:"id:Input" }}
             <small id="UserlHelp" class="form-text text-muted"></small>
         </div>
         <div class="form-group"> 
-            <label for="Input">select your image</label>
+            <label for="Input">عکس پست را انتخاب کنید :</label>
         </br>
             {{ form.pic }}
             <small id="UserlHelp" class="form-text text-muted"></small>
         </div>
         <div class="form-group"> 
-            <label for="Input">select your Categories</label>
+            <label for="Input">دسته بندی ها را انتخاب کنید :</label>
         </br>
 
             {{ form.category|attr:"rows:20"|attr:"cols:20"|attr:"type:select"|attr:"class:form-control"|attr:"placeholder:description"|attr:"id:Input" }}
             <small id="UserlHelp" class="form-text text-muted"></small>
         </div>
         <div class="form-group"> 
-            <label for="Input">Status</label>
+            <label for="Input">وضعیت انتشار را مشخص کنید :</label>
         </br>
 
             {{ form.status|attr:"rows:20"|attr:"cols:20"|attr:"type:select"|attr:"class:form-control"|attr:"placeholder:description"|attr:"id:Input" }}
             <small id="UserlHelp" class="form-text text-muted"></small>
         </div>
         <div class="form-group"> 
-            <label for="Input">select your Tags</label>
+            <label for="Input">تگ ها را انتخاب کنید :</label>
         </br>
 
             {{ form.tag|attr:"rows:20"|attr:"cols:20"|attr:"type:select"|attr:"class:form-control"|attr:"placeholder:description"|attr:"id:Input" }}
@@ -45,12 +45,17 @@
     </div>
     <div class="col-md-6">
         <div class="form-group"> 
-            <label for="Input">{{ form.bodytext_label }}</label>
+            <label for="Input">متن :</label>
             {{ form.bodytext|attr:"rows:20"|attr:"cols:20"|attr:"class:form-control"|attr:"placeholder:description"|attr:"id:Input" }}
             <small id="UserlHelp" class="form-text text-muted"></small>
         </div>
     </div>
-    <button type="submit" class="btn btn-primary">Submit</button>
+</br>
+<div class="row mb-4 mt-5">
+    <div class="col-12 mb-4 mt-5">
+        <div class="col-12 mb-4"><button type="submit" style="width: 100%;" class="btn btn-primary">ایجاد کردن</button></div>
+    </div>
+</div>
 </div>
 {% csrf_token %}
 </form>

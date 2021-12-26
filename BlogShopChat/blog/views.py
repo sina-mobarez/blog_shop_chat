@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail, BadHeaderError
+from django.db.models.aggregates import Count
 from django.http import HttpResponse
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import redirect, render, get_object_or_404
@@ -14,6 +15,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth.forms import PasswordChangeForm, UserChangeForm
 from django.contrib.auth.views import PasswordChangeView
 from django.utils.decorators import method_decorator
+from django.db.models import Count
 from .forms import *
 
 
@@ -24,13 +26,17 @@ from .forms import *
 class PostList(ListView):
     context_object_name = 'post_list'
     template_name = "all_post.html"
+    paginate_by = 6
 
     def get_queryset(self):
         return Post.published.all()
 
     def get_context_data(self, **kwargs):
         context = super(PostList, self).get_context_data(**kwargs)
-        context['category'] = Category.objects.all()
+        context['category'] = Category.objects.annotate(count_post=Count('post'))
+        context['postslider1'] = Post.objects.annotate(count_com=Count('comments')).order_by('count_com')[0]
+        context['postslider2'] = Post.objects.annotate(count_com=Count('comments')).order_by('count_com')[1]
+        context['postslider3'] = Post.objects.annotate(count_com=Count('comments')).order_by('count_com')[2]
         context['category_post'] = Post.objects.filter(category__id=self.kwargs.get('pk'))
         return context
 
