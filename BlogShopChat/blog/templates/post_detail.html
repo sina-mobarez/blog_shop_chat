@@ -1,99 +1,122 @@
 {% extends "base_weblog.html" %}
+{% block title %}
+{{ post.title }}
+{% endblock title %}
+
+{% block header %}
+{% endblock header %}
+
+{% block slider %}
+<div class="col-sm-12 col-md-12">
+  <div class="thumbnail">
+      <div class="caption">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item"><h2 class="card-text" style="color: #428bca;">{{ post.title }}</h2></li>
+          </ul>
+      </div>
+      <div class="text-muted text-left">
+        نوشته شده توسط : {{ post.posted_by }}
+      </div>
+      <div class="text-muted text-left mt-2 mb-2">
+        {{post.post_date}}
+      </div>
+  </div>
+</div>
+{% endblock slider %}
+
 {% block content %}
-        <article>
-					<h2>{{post.title}}</h2>
-          <br>
-          <p>Written by : <b>{{post.posted_by}}</b> on <b>{{post.post_date}}</b></p>
-          {% if user.is_authenticated and user == post.posted_by %}
-          <p style="float-right"><a href="{% url 'edit_post' slug=post.slug %}">edit</a></p>
-          <p style="float-left"><a href="{% url 'delete-post' slug=post.slug %}">delete</a></p>
-          {% endif %}
-          <br>
-          <br>
-          <img style="height: 100%; width: 100%;" src="{{MEDIA_URL}}{{ post.pic }}" alt="pic">
-          <br>
-          <br>
-					<p>{{ post.bodytext }}</p>
-          <br>
-          <p>{% for tag in tags %}
-            <a href="{% url 'post-tag' tag.id %}" style="text-decoration: none;" !important>{{tag.name}}</a></br>
- 
-          {% endfor %}</p>
-          <br>
-          {% if user.is_authenticated %}
-          <form action="{% url 'like_post' post.slug %}" method="POST">
-            {% csrf_token %}
-            {% if liked %}
-            <button type="submit", name="post_slug", value="{{ post.id }}", class="btn btn-danger btn-sm"> UnLike !</button> - {{ total_likes }}
-            </form>
-            {% else %}
-            <button type="submit", name="post_slug", value="{{ post.id }}", class="btn btn-primary btn-sm"> Like !</button> - {{ total_likes }}
-            </form>
-          {% endif %}
-          {% else %}
-          <p>{{ total_likes }} - likes </p>
-          {% endif %}
-          {% if user.is_authenticated and user == post.posted_by and post.status == 'DRF' %}
-          <form action="{% url 'change_status_post' post.slug %}" method="POST">
-            {% csrf_token %}
-          <button type="submit", name="status", value="{{ post.slug }}", class="btn btn-warning btn-sm"> Publish </button>
-				</form>
-        {% endif %}
-        </article>
-        <article>
-          <h3> {{comment_count}} comments : </h3>
-          <br>
-          <br>
-          {% if comment_count > 0 %}
-          {% for com in comment %}
-          <p><b>{{com.name}}</b> on <i>{{com.created}}</i> says :</p>
-          {% if user.is_authenticated %}
-          <form action="{% url 'like_comment' id=com.id %}" method="POST">
-            {% csrf_token %}
-            <button type="submit", name="comment_id", value="{{ com.id }}", class="btn btn- btn-sm"> Like!</button> - {{ com.total_likes }}
-            </form>
-            </form>
-          {% else %}
-          <p>{{ com.total_likes }} - likes </p>
-          {% endif %}
-          <br>
-          <br>
-          <p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {{com.body}}</p>
-          <br>
-          <br>
-          <br>
+
+<div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+
+  <div class="col-sm-12 col-md-12">
+    <div class="thumbnail">
+        <img src="{{MEDIA_URL}}{{ post.pic }}" alt="...">
+        <div class="caption mt-2">
+            <p>{{ post.bodytext }}</p>
+        </div>
+        <div class="caption mt-2">
+          {% for tag in tags %}
+          <a class="badge bg-secondary text-decoration-none link-light" href="{% url 'post-tag' tag.id %}">{{tag.name}}</a>
           {% endfor %}
+        </div>
+        <hr>
+        <div class="d-flex justify-content-end">
+          <div class="p-2">
+             <span class="stats-text text-muted">{{comment_count}} کامنت</span>
+          </div>
+          <div class="p-2">
+             <span class="fa-stack fa-fw stats-icon">
+             <i class="fa fa-circle fa-stack-2x text-danger"></i>
+             <i class="fa fa-heart fa-stack-1x fa-inverse t-plus-1"></i>
+             </span>
+             <span class="stats-total text-muted ">{{ total_likes }}</span>
+          </div>
+       </div>
+    </div>
+  </div>
 
-          {% endif %}
+</div>
 
-				</article>
-        <article>
-          {% if user.is_authenticated %}
-          <h3> add comments : </h3>
-          <br>
-          <br>
-          <form action="" method="POST">
-            {% csrf_token %}
-            {% for field in form %}
-            <div class="form-group">
-                {{ field.errors }}
-                <label>{{ field.label_tag }}</label>
-                <p>{{ field }}</p>
-            </div>
-            {% endfor %}
-            <button type="submit" class="btn btn-primary">Submit</button>
-            <button type="reset" class="btn btn-primary">Reset</button>
-        </form>
 
-          {% endif %}
-
-				</article>
 {% endblock content %}
 
-{% block name-side %} Categories {% endblock name-side %}
-
 {% block sidebar %}
-  {% for cat in category %}
-    <div style="background: #344; min-height: 0; margin: 10px auto; padding: 30px 10px; text-align: center; color: #FFF;" !important> <a href="{{cat.get_absolute_url}}" style="color: white;;  text-decoration: none;" !important>{{cat.name}}</a></div>
-  {% endfor %}
+{% if user.is_authenticated and user == post.posted_by %}
+<div class="list-group bg-dark">
+  <a href="{% url 'delete-post' slug=post.slug %}" style="color:red; !important" class="list-group-item">
+      <h4 class="list-group-item-heading">حذف پست</h4>
+      <p class="list-group-item-text"></p>
+  </a>
+
+
+  <a href="{% url 'edit_post' slug=post.slug %}" style="color:yellow; !important" class="list-group-item">
+      <h4 class="list-group-item-heading">ویرایش پست</h4>
+      <p class="list-group-item-text">
+      </p>
+  </a>
+</div>
+{% endif %}
+
+{% if user.is_authenticated %}
+<div class="list-group">
+
+
+  <a href="{% url 'new_post' %}" class="list-group-item">
+      <h4 class="list-group-item-heading">ایجاد پست جدید</h4>
+      <p class="list-group-item-text">
+          ازین قسمت میتوانید پست جدیدی را ایجاد کنید
+      </p>
+  </a>
+
+  <a href="{% url 'add-cat-tag' %}" class="list-group-item">
+      <h4 class="list-group-item-heading">ایجاد دسته بندی و تگ</h4>
+      <p class="list-group-item-text">شما میتوانید یک دسته بندی جدید یا تگی را ایجاد کنید</p>
+  </a>
+</div>
+{% endif %}
+
+  <div class="list-group">
+    <a href="#" class="list-group-item active">
+      دسته بندی ها
+    </a>
+    {% for cat in category %}
+      <a href="{{cat.get_absolute_url}}" class="list-group-item">
+        <span class="badge">{{ cat.count_post }}</span> {{cat.name}}
+      </a>
+    {% endfor %}
+  </div>
+
+  <div class="list-group">
+    <a href="#" class="list-group-item active">
+      تگ ها
+    </a>
+    {% for item in tag %}
+      <a href="{% url 'post-tag' item.id %}" class="list-group-item">
+        <span class="badge">{{ item.count_post }}</span> {{item.name}}
+      </a>
+    {% endfor %}
+  </div>
+
+
 {% endblock sidebar %}
+

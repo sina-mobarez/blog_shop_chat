@@ -1,81 +1,189 @@
 {% extends "base_weblog.html" %}
 {% block title %}
-search
+Posts
 {% endblock title %}
-{% block content %}
-{% if posts %}
-        <article>
-            {% if searched %}
-           <h4> You search for {{searched}}</h4>
-           <br><br>
-           {% endif %}
 
-            <p style="float-right"><a href="{% url 'new_post' %}">new post</a></p>
-            <br><br>
-            <p style="float-right"><a href="{% url 'edit_profile' %}">Edit Profile</a></p>
-            <br><br>
-            {% if posts %}
-           <h2>find this Posts with title : </h2>
-				</article>
-          {% for post in posts %}
+{% block header %}
+{% endblock header %}
 
-        <article>
-					<h2>{{post.title}}</h2>
-          <br>
-          <p>Written by : <b>{{post.posted_by}}</b> on <b>{{post.post_date}}</b></p>
-          <br>
-          <br>
-					<p>{{ post.bodytext|truncatewords:20 }}</p>
-          <br>
-          <p><a href={{ post.get_absolute_url }}>read more</a></p>
-				</article>
-                               
-
-
-
-
-          {% endfor %}
-          {% endif %}
-        </article>
-          {% if posts %}
-          <article>
-          <h2>find this Posts with body : </h2>
-               </article>
-         {% for post in postss %}
-
-       <article>
-                   <h2>{{post.title}}</h2>
-         <br>
-         <p>Written by : <b>{{post.posted_by}}</b> on <b>{{post.post_date}}</b></p>
-         <br>
-         <br>
-                   <p>{{ post.bodytext|truncatewords:20 }}</p>
-         <br>
-         <p><a href={{ post.get_absolute_url }}>read more</a></p>
-               </article>
-                              
-
-
-
-
-         {% endfor %}
-         {% endif %}
-        </article>
-
+{% block slider %}
+{% if searched %}
+<div class="">
+  <h3>جستجو برای : {{ searched}}</h3>
+  <hr>
+</div>
 {% else %}
-<article>
-    <h4> You search for {{searched}}</h4>
-    <p> Nothing Found </p>
-</article>
+<div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+  <div class="">
+    <h3>شما چیزی را جستجو نکرده اید </h3>
+    <hr>
+  </div>
+</div>
 {% endif %}
+
+{% endblock slider %}
+
+
+{% block content %}
+{% if searched %}
+{% if posts %}
+
+<div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+  <div class="card-footer text-muted">
+    جستجو بر اساس عنوان :
+    <hr>
+  </div>
+{% for post in posts %}
+
+  
+  <div class="col-sm-6 col-md-6">
+    <div class="thumbnail">
+        <img src="{{MEDIA_URL}}{{ post.pic }}" alt="...">
+        <div class="caption">
+            <h3 style="color: #428bca;">{{post.title}}</h3>
+            <p>{{ post.bodytext|truncatewords:30 }}</p>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item"><p class="card-text"><small class="text-muted">نوشته شده توسط :<b>{{post.posted_by}}</small></p></li>
+            </ul>
+            <p><a href={{ post.get_absolute_url }}>ادامه مطلب</a></p>
+        </div>
+        <div class="card-footer text-muted text-center">
+          {{post.post_date}}
+        </div>
+    </div>
+  </div>
+  {% if forloop.counter|divisibleby:2 %}
+  </div>
+  <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+  {% endif %}
+
+
+{% endfor %}
+</div>
+
+
+{% if is_paginated %}
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+      <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    {% for i in paginator.page_range %}
+      {% if page_obj.number == i %}
+        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+      {% else %}
+        <li><a href="?page={{ i }}">{{ i }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+      <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+{% endif %}
+{% if postss %}
+<div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+<div class="card-footer text-muted">
+  جستجو بر اساس متن :
+  <hr>
+</div>
+{% for post in postss %}
+
+  
+  <div class="col-sm-6 col-md-6">
+    <div class="thumbnail">
+        <img src="{{MEDIA_URL}}{{ post.pic }}" alt="...">
+        <div class="caption">
+            <h3 style="color: #428bca;">{{post.title}}</h3>
+            <p>{{ post.bodytext|truncatewords:30 }}</p>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item"><p class="card-text"><small class="text-muted">نوشته شده توسط :<b>{{post.posted_by}}</small></p></li>
+            </ul>
+            <p><a href={{ post.get_absolute_url }}>ادامه مطلب</a></p>
+        </div>
+        <div class="card-footer text-muted text-center">
+          {{post.post_date}}
+        </div>
+    </div>
+  </div>
+  {% if forloop.counter|divisibleby:2 %}
+  </div>
+  <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+  {% endif %}
+
+
+{% endfor %}
+</div>
+
+
+{% if is_paginated %}
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+      <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    {% for i in paginator.page_range %}
+      {% if page_obj.number == i %}
+        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+      {% else %}
+        <li><a href="?page={{ i }}">{{ i }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+      <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+{% endif %}
+{% endif %}
+{% else %}
+<div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+  <div class="col-md-8">
+    <div class="">
+      <p> چیزی یافت نشد </p>
+    </div>
+    <hr>
+    <button type="button" class="btn  btn-sm btn-success"><a href="{% url 'new_post' %}" style="color:black ; text-decoration: none;" !important>ایجاد پست جدید</a></button>
+  </div>
+</div>
+
+
+{% endif %}
+{% endif %}
+
 {% endblock content %}
 
-{% block name-side %} Categories {% endblock name-side %}
+
 
 {% block sidebar %}
-  {% for cat in category %}
-    <div style="background: #344; min-height: 0; margin: 10px auto; padding: 30px 10px; text-align: center; color: #FFF;" !important> <a href="{{cat.get_absolute_url}}" style="color: white;;  text-decoration: none;" !important>{{cat.name}}</a></div>
-  {% endfor %}
+
+  <div class="list-group">
+    <a href="#" class="list-group-item active">
+      دسته بندی ها
+    </a>
+    {% for cat in category %}
+      <a href="{{cat.get_absolute_url}}" class="list-group-item">
+        <span class="badge">{{ cat.count_post }}</span> {{cat.name}}
+      </a>
+    {% endfor %}
+  </div>
+
+  <div class="list-group">
+    <a href="#" class="list-group-item active">
+      تگ ها
+    </a>
+    {% for item in tag %}
+      <a href="{% url 'post-tag' item.id %}" class="list-group-item">
+        <span class="badge">{{ item.count_post }}</span> {{item.name}}
+      </a>
+    {% endfor %}
+  </div>
+
+
 {% endblock sidebar %}
 
 

@@ -16,6 +16,7 @@ from django.contrib.auth.forms import PasswordChangeForm, UserChangeForm
 from django.contrib.auth.views import PasswordChangeView
 from django.utils.decorators import method_decorator
 from django.db.models import Count
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .forms import *
 
 
@@ -26,7 +27,7 @@ from .forms import *
 class PostList(ListView):
     context_object_name = 'post_list'
     template_name = "all_post.html"
-    paginate_by = 6
+    paginate_by = 4
 
     def get_queryset(self):
         return Post.published.all()
@@ -34,6 +35,7 @@ class PostList(ListView):
     def get_context_data(self, **kwargs):
         context = super(PostList, self).get_context_data(**kwargs)
         context['category'] = Category.objects.annotate(count_post=Count('post'))
+        context['tag'] = Tag.objects.annotate(count_post=Count('post'))
         context['postslider1'] = Post.objects.annotate(count_com=Count('comments')).order_by('count_com')[0]
         context['postslider2'] = Post.objects.annotate(count_com=Count('comments')).order_by('count_com')[1]
         context['postslider3'] = Post.objects.annotate(count_com=Count('comments')).order_by('count_com')[2]
@@ -46,9 +48,10 @@ def post_detail(request, slug):
     print('oooomad oooonja')
     post = Post.objects.get(slug=slug)
     comment = Comment.objects.filter(post__slug=slug)
-    category = Category.objects.all()
+    category = Category.objects.annotate(count_post=Count('post'))
     cm_count = Comment.objects.filter(post__id=post.id).count()
     likes = post.total_likes()
+    tag = Tag.objects.annotate(count_post=Count('post'))
     tags = Tag.objects.filter(post__id=post.id)
     liked = False
     if post.likes.filter(id=request.user.id).exists():
@@ -64,7 +67,7 @@ def post_detail(request, slug):
             
 
             return redirect('post_detail', slug= slug) 
-    return render(request, 'post_detail.html', {'post': post, 'comment': comment, 'category': category, 'form': form, 'total_likes': likes, 'liked': liked, 'comment_count': cm_count, 'tags': tags})
+    return render(request, 'post_detail.html', {'post': post, 'comment': comment, 'category': category, 'form': form, 'total_likes': likes, 'liked': liked, 'comment_count': cm_count, 'tags': tags, 'tag': tag})
 
 
 # a class based view for show post in a special category
@@ -72,20 +75,24 @@ class CategoryDetail(DetailView):
     model = Category
     context_object_name = 'category'
     template_name = "category.html"
+    paginate_by = 4
 
     def get_context_data(self, **kwargs):
         context = super(CategoryDetail, self).get_context_data(**kwargs)
-        context['category_all'] = Category.objects.all()
+        context['category_all'] = Category.objects.annotate(count_post=Count('post'))
+        context['tag'] = Tag.objects.annotate(count_post=Count('post'))
         return context
 
 class TagDetail(DetailView):
     model = Tag
     context_object_name = 'tag'
     template_name = "tag.html"
+    paginate_by = 4
 
     def get_context_data(self, **kwargs):
         context = super(TagDetail, self).get_context_data(**kwargs)
-        context['tag_all'] = Tag.objects.all()
+        context['tag_all'] = Tag.objects.annotate(count_post=Count('post'))
+        context['category_all'] = Category.objects.annotate(count_post=Count('post'))
         return context
 
 
@@ -146,10 +153,20 @@ def contact_form(request):
 @login_required(login_url='login')
 def dashboard(request):
     user = request.user
-    pposts = Post.published.filter(posted_by=user)
+    ppost = Post.published.filter(posted_by=user)
     dposts = Post.draft.filter(posted_by=user)
-    category = Category.objects.all()
-    return render(request, 'dashboard.html', {'posts_published': pposts,'posts_draft': dposts, 'user': user, 'category': category})
+    category = Category.objects.annotate(count_post=Count('post'))
+    tag = Tag.objects.annotate(count_post=Count('post'))
+    page = request.GET.get('page', 1)
+
+    paginator = Paginator(ppost, 6)
+    try:
+        pposts = paginator.page(page)
+    except PageNotAnInteger:
+        pposts = paginator.page(1)
+    except EmptyPage:
+        pposts = paginator.page(paginator.num_pages)
+    return render(request, 'dashboard.html', {'posts_published': pposts,'posts_draft': dposts, 'user': user, 'category': category, 'tag': tag})
 
 
 # don't save image
@@ -191,15 +208,16 @@ class PasswordChangeView(PasswordChangeView):
     success_message = "Your password was changed successfully"
 
 def search(request):
-    category = Category.objects.all()
+    category = Category.objects.annotate(count_post=Count('post'))
+    tag = Tag.objects.annotate(count_post=Count('post'))
     if request.method == 'POST':
         searched = request.POST['searched']
         post = Post.objects.filter(title__contains=searched)
         posts = Post.objects.filter(bodytext__contains=searched)
 
-        return render(request, 'search.html', {'searched': searched, 'posts': post, 'category': category, 'postss': posts})
+        return render(request, 'search.html', {'searched': searched, 'posts': post, 'category': category, 'postss': posts, 'tag': tag})
     else:
-        return render(request, 'search.html', {})   
+        return render(request, 'search.html', {'category': category, 'tag': tag})   
 
 
 def LikeView(request, slug):

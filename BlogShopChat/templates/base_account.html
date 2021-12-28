@@ -51,7 +51,6 @@
                     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                         <ul class="nav navbar-nav">
                             <li class="active"><a href="{% url 'post_list' %}">صفحه ی اصلی<span class="sr-only">(current)</span></a></li>
-                            <li><a href="{% url 'contact' %}">تماس با ما</a></li>
 							
 							{% if user.is_authenticated %}
                             <li><a href="{% url 'logout' %}">خارج شدن</a></li>

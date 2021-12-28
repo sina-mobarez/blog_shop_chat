@@ -55,9 +55,15 @@ Posts
     <div class="thumbnail">
         <img src="{{MEDIA_URL}}{{ post.pic }}" alt="...">
         <div class="caption">
-            <h3>{{post.title}}</h3>
-            <p>{{ post.bodytext|truncatewords:20 }}</p>
-            <p><a href={{ post.get_absolute_url }} class="btn btn-default" role="button">ادامه مطلب</a></p>
+            <h3 style="color: #428bca;">{{post.title}}</h3>
+            <p>{{ post.bodytext|truncatewords:30 }}</p>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item"><p class="card-text"><small class="text-muted">نوشته شده توسط :<b>{{post.posted_by}}</small></p></li>
+            </ul>
+            <p><a href={{ post.get_absolute_url }}>ادامه مطلب</a></p>
+        </div>
+        <div class="card-footer text-muted text-center">
+          {{post.post_date}}
         </div>
     </div>
   </div>
@@ -69,6 +75,29 @@ Posts
 
 {% endfor %}
 </div>
+
+
+{% if is_paginated %}
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+      <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    {% for i in paginator.page_range %}
+      {% if page_obj.number == i %}
+        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+      {% else %}
+        <li><a href="?page={{ i }}">{{ i }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+      <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+{% endif %}
 
 
 {% endblock content %}
@@ -84,6 +113,17 @@ Posts
     {% for cat in category %}
       <a href="{{cat.get_absolute_url}}" class="list-group-item">
         <span class="badge">{{ cat.count_post }}</span> {{cat.name}}
+      </a>
+    {% endfor %}
+  </div>
+
+  <div class="list-group">
+    <a href="#" class="list-group-item active">
+      تگ ها
+    </a>
+    {% for item in tag %}
+      <a href="{% url 'post-tag' item.id %}" class="list-group-item">
+        <span class="badge">{{ item.count_post }}</span> {{item.name}}
       </a>
     {% endfor %}
   </div>
