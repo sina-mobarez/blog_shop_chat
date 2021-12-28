@@ -63,13 +63,13 @@
 {% block sidebar %}
 {% if user.is_authenticated and user == post.posted_by %}
 <div class="list-group bg-dark">
-  <a href="{% url 'delete-post' slug=post.slug %}" style="color:red; !important" class="list-group-item">
+  <a href="{% url 'delete-post' slug=post.slug %}" style="color:red !important;" class="list-group-item">
       <h4 class="list-group-item-heading">حذف پست</h4>
       <p class="list-group-item-text"></p>
   </a>
 
 
-  <a href="{% url 'edit_post' slug=post.slug %}" style="color:yellow; !important" class="list-group-item">
+  <a href="{% url 'edit_post' slug=post.slug %}" style="color:yellow !important;" class="list-group-item">
       <h4 class="list-group-item-heading">ویرایش پست</h4>
       <p class="list-group-item-text">
       </p>
