@@ -81,7 +81,7 @@ class Product(models.Model):
 
 
 
-class Image(models.Model):
+class Picture(models.Model):
     name = models.CharField(max_length=255)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='uploads/product', blank=True, null=True)
@@ -120,6 +120,13 @@ class Image(models.Model):
         return thumbnail
 
 
+    def save(self, *args, **kwargs):
+        if self.image:
+            self.thumbnail = self.make_thumbnail(self.image)
+        super().save(*args, **kwargs)
+    
+
+
 class Shop(models.Model):
     PENDING= 'PEN'
     CONFIRMED= 'CON'
@@ -145,6 +152,9 @@ class Shop(models.Model):
         if not self.slug:
             self.slug = unique_slugify(self, slugify(self.name))
         super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f'{self.name}'
         
 
 
@@ -167,7 +177,7 @@ class Cart(models.Model):
         ordering = ('-created_at',)
     
     def __str__(self):
-        return f'{self.customer}'
+        return f'{self.customer}/{self.status_payment}/{self.order_number}'
 
     def save(self, *args, **kwargs):
         if not self.paid_amount:
@@ -190,7 +200,7 @@ class CartItem(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.price:
-            self.price = self.product_set.price
+            self.price = self.product.price
         super().save(*args, **kwargs)
 
     def __str__(self):
