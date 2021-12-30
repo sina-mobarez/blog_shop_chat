@@ -162,6 +162,18 @@
 {% block sidebar %}
 {% if user.is_authenticated and user == post.posted_by %}
 <div class="list-group bg-dark">
+  {% if user.is_authenticated and user == post.posted_by and post.status == 'DRF' %}
+      <form action="{% url 'change_status_post' post.slug %}" method="POST">
+        {% csrf_token %}
+        <button type="submit", name="status", value="{{ post.slug }}", class="btn btn-link"><a href="#" style="color:red !important;" class="list-group-item">
+          <h4 class="list-group-item-heading">انتشار پست</h4>
+          <p class="list-group-item-text"></p>
+        </a></button>
+      </form> 
+{% endif %}
+
+
+
   <a href="{% url 'delete-post' slug=post.slug %}" style="color:red !important;" class="list-group-item">
       <h4 class="list-group-item-heading">حذف پست</h4>
       <p class="list-group-item-text"></p>

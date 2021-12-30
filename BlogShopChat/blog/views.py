@@ -81,6 +81,7 @@ def post_detail(request, slug):
     return render(request, 'post_detail.html', {'post': post, 'comment': comments, 'category': category, 'form': form, 'total_likes': likes, 'liked': liked, 'comment_count': cm_count, 'tags': tags, 'tag': tag})
 
 
+
 # a class based view for show post in a special category
 class CategoryDetail(DetailView):
     model = Category
@@ -93,6 +94,7 @@ class CategoryDetail(DetailView):
         context['category_all'] = Category.objects.annotate(count_post=Count('post'))
         context['tag'] = Tag.objects.annotate(count_post=Count('post'))
         return context
+
 
 class TagDetail(DetailView):
     model = Tag
@@ -109,6 +111,7 @@ class TagDetail(DetailView):
 
 
 
+@login_required(login_url='login')
 def add_post(request):
     category = Category.objects.all()
     if request.method == 'POST':
@@ -118,12 +121,13 @@ def add_post(request):
             post.posted_by = request.user
             post.save()
             form.save_m2m()
-            messages.success(request,"New Post is Created , congradulations !!")
+            messages.success(request,"پست جدید با موفقیت ایجاد شد")
             return redirect('dashboard')
     else:
         form = PostForm()
 
     return render(request, 'add_post.html', {'form': form, 'category': category})
+
 
 
 def signup(request):
@@ -136,11 +140,12 @@ def signup(request):
                 password=form.cleaned_data['password1']
             )
             login(request, new_user)
-            messages.success(request,"Your account created, You're in now :))))) ")
+            messages.success(request,"حساب کاربری ایجاد شد و شما وارد شدید ")
             return redirect('post_list')
     else:
         form = UserCreateForm()
     return render(request, 'registration/signup.html', {'form': form})
+
 
 
 def contact_form(request):
@@ -156,9 +161,10 @@ def contact_form(request):
                 send_mail(subject, message, sender, recipients, fail_silently=True)
             except BadHeaderError:
                 return HttpResponse('Invalid header found')
-            messages.success(request, 'Success, Your email has been sent, and we response to you as soon we can !')
+            messages.success(request, 'نظر شما با موفقیت ارسال شد به زودی به شما پاسخ خواهیم داد ممنون از شما')
             return redirect('post_list')
     return render(request, 'contact.html', {'form': form})
+
 
 
 @login_required(login_url='login')
@@ -180,7 +186,8 @@ def dashboard(request):
     return render(request, 'dashboard.html', {'posts_published': pposts,'posts_draft': dposts, 'user': user, 'category': category, 'tag': tag})
 
 
-# don't save image
+
+@login_required(login_url='login')
 def edit_post(request, slug):
     post = get_object_or_404(Post, slug=slug)
     if request.method == "POST":
@@ -194,11 +201,12 @@ def edit_post(request, slug):
             post.modified = timezone.now()
             post.save()
             form.save_m2m()
-            messages.info(request,"Your Post modified successfully !")
+            messages.info(request,"پست شما ویرایش شد ")
             return redirect('post_detail', slug=post.slug)
     else:
         form = PostForm(instance=post)
     return render(request, 'edit_post.html', {'form': form, 'post':post})
+
 
 
 @method_decorator(login_required, name='dispatch')
@@ -206,12 +214,13 @@ class UserEditView(generic.UpdateView):
     form_class = UserChangeForm
     template_name = 'registration/edit_profile.html'
     success_url = reverse_lazy('dashboard')
-    success_message = "%(username)s was edited successfully"
+    success_message = "اطلاعات حساب کاربری به روز شد "
 
     def get_object(self):
         return self.request.user
 
 
+@method_decorator(login_required, name='dispatch')
 class PasswordChangeView(PasswordChangeView):
     form_class = PasswordChangeForm
     success_url = reverse_lazy('password_change_done')
@@ -231,6 +240,8 @@ def search(request):
         return render(request, 'search.html', {'category': category, 'tag': tag})   
 
 
+
+@login_required(login_url='login')
 def LikeView(request, slug):
     post = get_object_or_404(Post, slug=slug)
     liked = False
@@ -243,6 +254,9 @@ def LikeView(request, slug):
 
     return HttpResponseRedirect(reverse('post_detail', args=[str(slug)]))
 
+
+
+@login_required(login_url='login')
 def Like_comment(request, id):
     print('ooomad injaaaa')
     comment = get_object_or_404(Comment, id=id)
@@ -259,6 +273,7 @@ def Like_comment(request, id):
     return HttpResponseRedirect(reverse('post_detail', args=[str(slug)]))
 
 
+@login_required(login_url='login')
 def add_category_tag(request):
     category_form = CategoryForm()
     tag_form = TagForm()
@@ -282,6 +297,7 @@ def add_category_tag(request):
     return render(request, 'add-cat-tag.html', {'tags': tag, 'category': category,'catform': category_form, 'tagform': tag_form})
 
 
+@login_required(login_url='login')
 def delete_c(request,id):
     category = get_object_or_404(Category, id=id)
     if request.method == "POST":
@@ -291,6 +307,7 @@ def delete_c(request,id):
     return render(request,'delete-c.html',{'category':category})
 
 
+@login_required(login_url='login')
 def delete_t(request,id):
     tag = get_object_or_404(Tag, id=id)
     if request.method == "POST":
@@ -300,6 +317,7 @@ def delete_t(request,id):
     return render(request,'delete-t.html',{'tag':tag})
 
 
+@login_required(login_url='login')
 def edit_t(request,id):
     tag = get_object_or_404(Tag,id=id)
     if request.method == "POST":
@@ -312,6 +330,7 @@ def edit_t(request,id):
     return render(request,'edit-t.html',{'form':form,'tag':tag})
 
 
+@login_required(login_url='login')
 def edit_c(request,id):
     category = get_object_or_404(Category,id=id)
     if request.method == "POST":
@@ -324,6 +343,7 @@ def edit_c(request,id):
     return render(request,'edit-c.html',{'form':form,'category':category})
 
 
+@login_required(login_url='login')
 def delete_post(request,slug):
     post = get_object_or_404(Post, slug=slug)
     if request.method == "POST":
@@ -333,11 +353,12 @@ def delete_post(request,slug):
     return render(request,'delete-post.html',{'post':post})
 
 
+@login_required(login_url='login')
 def change_status_post(request, slug):
     post = get_object_or_404(Post, slug=slug)
     if post.status == 'DRF':
         post.status = 'PUB'
         post.save()
-        messages.success(request,"Your Post published successfully !")
+        messages.success(request,"پست شما با موفقیت منتشر شد")
 
     return HttpResponseRedirect(reverse('dashboard'))
