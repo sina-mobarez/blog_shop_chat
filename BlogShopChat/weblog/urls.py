@@ -19,6 +19,8 @@ from django.urls import path, include
 
 from . import settings
 
+
+
 urlpatterns = [
                   path('grappelli/', include('grappelli.urls')),
                   path('admin/', admin.site.urls),

@@ -48,6 +48,17 @@ def post_detail(request, slug):
     print('oooomad oooonja')
     post = Post.objects.get(slug=slug)
     comment = Comment.objects.filter(post__slug=slug)
+
+    page = request.GET.get('page', 1)
+    paginator = Paginator(comment, 3)
+
+    try:
+        comments = paginator.page(page)
+    except PageNotAnInteger:
+        comments = paginator.page(1)
+    except EmptyPage:
+        comments = paginator.page(paginator.num_pages)
+
     category = Category.objects.annotate(count_post=Count('post'))
     cm_count = Comment.objects.filter(post__id=post.id).count()
     likes = post.total_likes()
@@ -67,7 +78,7 @@ def post_detail(request, slug):
             
 
             return redirect('post_detail', slug= slug) 
-    return render(request, 'post_detail.html', {'post': post, 'comment': comment, 'category': category, 'form': form, 'total_likes': likes, 'liked': liked, 'comment_count': cm_count, 'tags': tags, 'tag': tag})
+    return render(request, 'post_detail.html', {'post': post, 'comment': comments, 'category': category, 'form': form, 'total_likes': likes, 'liked': liked, 'comment_count': cm_count, 'tags': tags, 'tag': tag})
 
 
 # a class based view for show post in a special category

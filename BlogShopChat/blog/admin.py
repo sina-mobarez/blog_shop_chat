@@ -33,7 +33,7 @@ class PostAdmin(admin.ModelAdmin):
 
     fieldsets = (
         (None, {
-            'fields': (('title', 'tag'), 'pic', 'category',)
+            'fields': ('title', 'bodytext','pic',('category', 'tag'))
         }),
     
 

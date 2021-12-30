@@ -1,4 +1,5 @@
 {% extends "base_weblog.html" %}
+{% load widget_tweaks %}
 {% block title %}
 {{ post.title }}
 {% endblock title %}
@@ -8,16 +9,16 @@
 
 {% block slider %}
 <div class="col-sm-12 col-md-12">
-  <div class="thumbnail">
-      <div class="caption">
+  <div class="">
+      <div style="background-color: mintcream !important;" class="caption">
           <ul class="list-group list-group-flush">
             <li class="list-group-item"><h2 class="card-text" style="color: #428bca;">{{ post.title }}</h2></li>
           </ul>
       </div>
-      <div class="text-muted text-left">
+      <div  class="text-left">
         نوشته شده توسط : {{ post.posted_by }}
       </div>
-      <div class="text-muted text-left mt-2 mb-2">
+      <div class=" text-left mt-2 mb-2">
         {{post.post_date}}
       </div>
   </div>
@@ -45,31 +46,113 @@
             <button type="submit", name="post_slug", value="{{ post.id }}", class="btn">                                    <span class="fa-stack fa-fw stats-icon">
               <i class="fa fa-circle fa-stack-2x text-danger"></i>
               <i class="fa fa-heart fa-stack-1x fa-inverse t-plus-1"></i>
-              </span></button> 
+              </span>پسندیده ام</button> 
             </form>
             {% else %}
             <button type="submit", name="post_slug", value="{{ post.id }}", class="btn btn-link">                                    <span class="fa-stack fa-fw stats-icon">
               <i class="fa fa-circle fa-stack-2x text-danger"></i>
               <i class="fa fa-heart fa-stack-1x fa-inverse t-plus-1"></i>
-              </span></button> 
+              </span>میپسندم</button> 
             {% endif %}
           </form>
 
         </div>
         <hr>
        <div class="row">
-          <div class="col-md-12">
+          <div class="col-md-12 pb-2">
             <a href="javascript:;" class="m-r-15 text-inverse-lighter pull-right"><i class="fa fa-comments fa-fw fa-lg m-r-3"></i> نظرات {{ comment_count }}</a> 
             <a href="javascript:;" class="m-r-15 text-inverse-lighter pull-left"><i class="fa fa-thumbs-up fa-fw fa-lg m-r-3"></i> لایک {{ total_likes }}</a>
            </div>
+           <br>
            <hr>
-           
- 
-          
-    
+       </div>
+      
+       
+    </div>
+  
+  <br>
+  <div style="background-color: darkgray;" class="col-sm-12 col-md-12 mt-2">
+    {% if user.is_authenticated %}
+    <div class="row">
+      <br>
+      <div class="col-md-10 pull-left mt-2">
+    <form action="" method="POST">
+      {% csrf_token %}
+      <div class="form-group">
+        {{ form.body|attr:"rows:20"|attr:"cols:20"|attr:"class:form-control"|attr:"id:InputUser" }}
+        <small id="UserlHelp" class="form-text text-muted"></small> 
       </div>
     </div>
+    <div class="col-md-2 pull-right">
+      <button type="submit" class="btn btn-primary">ثبت نظر</button>
+    </div>
+  </form>
+
+    {% endif %}
   </div>
+
+  </div>
+  <br>
+  <div style="background-color: lightgoldenrodyellow;" class="col-sm-12 col-md-12 thumbnail mt-2">
+
+    {% if comment_count > 0 %}
+    {% for com in comment %}
+    <div class="row">
+
+       <div class="col-md-12">
+
+         <div class="col-md-3 pull-left">
+           <span class="text-muted">{{ com.created }}</span>
+         </div>
+         <div class="col-md-8 pull-right">
+           <p><b>{{ com.name }} میگه :</b></p>
+           <br>
+           &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; {{ com.body }}
+         </div>
+
+       </div>
+     </div>
+     <br>
+       <div style="border-bottom: black solid 1px; padding-top: 2px;" class="row">
+         <div style="direction: ltr;" class="col-md-12">
+         <form action="{% url 'like_comment' id=com.id %}" method="POST">
+           {% csrf_token %}
+           <button type="submit", name="comment_id", value="{{ com.id }}", class="btn btn-link"><i class="fa fa-thumbs-up fa-fw fa-sm m-r-3"></i></button>({{ com.total_likes }})
+           </form>
+         </div>
+
+       </div>
+       <br>
+       <br>
+       {% endfor %}
+       {% endif %}
+
+       {% if comment.has_other_pages %}
+       <ul class="pagination">
+         {% if comment.has_previous %}
+           <li><a href="?page={{ users.previous_page_number }}">&laquo;</a></li>
+         {% else %}
+           <li class="disabled"><span>&laquo;</span></li>
+         {% endif %}
+         {% for i in comment.paginator.page_range %}
+           {% if users.number == i %}
+             <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+           {% else %}
+             <li><a href="?page={{ i }}">{{ i }}</a></li>
+           {% endif %}
+         {% endfor %}
+         {% if comment.has_next %}
+           <li><a href="?page={{ users.next_page_number }}">&raquo;</a></li>
+         {% else %}
+           <li class="disabled"><span>&raquo;</span></li>
+         {% endif %}
+       </ul>
+     {% endif %}
+
+  </div>
+  <br>
+ 
+</div>
 
 </div>
 
@@ -132,6 +215,7 @@
       </a>
     {% endfor %}
   </div>
+
 
 
 {% endblock sidebar %}

@@ -159,7 +159,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'default from email'
 
-LANGUAGE_CODE = 'fa-ir'    # for persian 
+# LANGUAGE_CODE = 'fa-ir'    # for persian 
 
 GRAPPELLI_ADMIN_TITLE = 'Final Project'
 GRAPPELLI_CLEAN_INPUT_TYPES = True
