@@ -69,19 +69,18 @@ class CartItemAdmin(admin.ModelAdmin):
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('category','name', 'slug', 'description', 'price', 'quantity', 'date_added')
+    list_display = ('category','name', 'slug', 'description', 'price', 'quantity', 'date_added', 'show_image')
     list_filter = ('name', 'price', 'category')
     search_fields = ('name',)
     date_hierarchy = ('date_added')
 
     @admin.display(empty_value='-',description="image")
     def show_image(self, obj):
-        if (obj.image):
-            print(obj.image.url)
-        
+        if (obj.picture_set.all().first()):
+            print('woooow',obj.picture_set.all().first().thumbnail.url)
             return format_html(
                 '<img src="{}" width=50 height=50/>',
-                obj.image.url,
+                obj.picture_set.all().first().thumbnail.url,
                 
             )
         return '-'
@@ -90,18 +89,17 @@ class ProductAdmin(admin.ModelAdmin):
     list_editable = ('quantity', 'price')
 
 class PictureAdmin(admin.ModelAdmin):
-    list_display = ('product','name', 'image', 'default', 'thumbnail',)
+    list_display = ('product','name', 'default','image_test')
     list_filter = ('default',)
     search_fields = ('name',)
 
     @admin.display(empty_value='-',description="image")
-    def show_image(self, obj):
-        if (obj.image):
-            print(obj.image.url)
+    def image_test(self, obj):
+        if (obj.thumbnail):
         
             return format_html(
                 '<img src="{}" width=50 height=50/>',
-                obj.image.url,
+                obj.thumbnail.url,
                 
             )
         return '-'

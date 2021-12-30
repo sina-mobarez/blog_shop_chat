@@ -71,10 +71,10 @@ class Product(models.Model):
         super().save(*args, **kwargs)
 
     def get_default(self):
-        return self.image_set.filter(default=True).first()
+        return self.picture_set.filter(default=True).first()
 
     def get_thumbnail_default(self):
-        return self.image_set.filter(default=True).first().get_thumbnail()
+        return self.picture_set.filter(default=True).first().get_thumbnail()
     
     def get_absolute_url(self):
         return f'/{self.category}/{self.slug}/'

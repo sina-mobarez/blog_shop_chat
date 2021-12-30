@@ -50,7 +50,7 @@ class PostForm(forms.ModelForm):
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = ('email', 'body')
+        fields = ('body',)
 
 
 class UserCreateForm(UserCreationForm):

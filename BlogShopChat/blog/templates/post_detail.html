@@ -38,20 +38,36 @@
           {% for tag in tags %}
           <a class="badge bg-secondary text-decoration-none link-light" href="{% url 'post-tag' tag.id %}">{{tag.name}}</a>
           {% endfor %}
+
+          <form class="pull-left" action="{% url 'like_post' post.slug %}" method="POST">
+            {% csrf_token %}
+            {% if liked %}
+            <button type="submit", name="post_slug", value="{{ post.id }}", class="btn">                                    <span class="fa-stack fa-fw stats-icon">
+              <i class="fa fa-circle fa-stack-2x text-danger"></i>
+              <i class="fa fa-heart fa-stack-1x fa-inverse t-plus-1"></i>
+              </span></button> 
+            </form>
+            {% else %}
+            <button type="submit", name="post_slug", value="{{ post.id }}", class="btn btn-link">                                    <span class="fa-stack fa-fw stats-icon">
+              <i class="fa fa-circle fa-stack-2x text-danger"></i>
+              <i class="fa fa-heart fa-stack-1x fa-inverse t-plus-1"></i>
+              </span></button> 
+            {% endif %}
+          </form>
+
         </div>
         <hr>
-        <div class="d-flex justify-content-end">
-          <div class="p-2">
-             <span class="stats-text text-muted">{{comment_count}} کامنت</span>
-          </div>
-          <div class="p-2">
-             <span class="fa-stack fa-fw stats-icon">
-             <i class="fa fa-circle fa-stack-2x text-danger"></i>
-             <i class="fa fa-heart fa-stack-1x fa-inverse t-plus-1"></i>
-             </span>
-             <span class="stats-total text-muted ">{{ total_likes }}</span>
-          </div>
-       </div>
+       <div class="row">
+          <div class="col-md-12">
+            <a href="javascript:;" class="m-r-15 text-inverse-lighter pull-right"><i class="fa fa-comments fa-fw fa-lg m-r-3"></i> نظرات {{ comment_count }}</a> 
+            <a href="javascript:;" class="m-r-15 text-inverse-lighter pull-left"><i class="fa fa-thumbs-up fa-fw fa-lg m-r-3"></i> لایک {{ total_likes }}</a>
+           </div>
+           <hr>
+           
+ 
+          
+    
+      </div>
     </div>
   </div>
 
