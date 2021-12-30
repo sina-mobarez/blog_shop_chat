@@ -1,0 +1,23 @@
+{% extends "base_form.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="container">
+
+    <h1 class="text-center mt-5">ثبت نام کردن</h1>
+    <hr>
+    
+    <div class="row" >
+        <div class="col-4 mx-auto" style="direction: rtl;">
+            <form action="{% url 'register' %}" method="post">
+                {{ form|crispy }}
+                <input type="submit" class="btn btn-success btn-block" value="ایجاد حساب کاربری">
+                </br>
+                <a href="{% url 'login' %}">قبلا حساب کاربری ایجاد کرده اید؟</a>
+                {% csrf_token %}
+            </form>
+        </div>
+    </div>
+    </div>
+
+
+{% endblock %}

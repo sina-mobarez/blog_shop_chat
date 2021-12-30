@@ -1,0 +1,40 @@
+{% extends "base_form.html" %}
+{% load widget_tweaks %}
+{% block content %}
+<div class="container">
+
+    <h1 class="text-center mt-5">وارد شدن</h1>
+    <hr>
+    
+    <div class="row" >
+        <div class="col-4 mx-auto" style="direction: rtl;">
+            <form action="{% url 'login' %}" method="post">
+                <div class="form-group"> 
+                    <label for="InputUser">نام کاربری/ ایمیل/ شماره مبایل *</label>
+                    {{ form.username|attr:"rows:20"|attr:"cols:20"|attr:"class:form-control"|attr:"id:InputUser" }}
+                    <small id="UserlHelp" class="form-text text-muted"></small> 
+                </div>
+                <div class="form-group"> 
+                    <label for="InputPass">* رمز عبور</label>
+                    {{ form.password|attr:"rows:20"|attr:"cols:20"|attr:"class:form-control"|attr:"id:InputPass" }}
+                    <small id="UserlHelp" class="form-text text-muted"></small>
+                </div>
+                <div class="col-12 mb-4">
+                    <button type="submit" class="btn btn-success btn-big">ورود</button></div>
+                
+            </div>
+            <div class="mb-3">
+                <a href="{% url 'signup' %}">حساب کاربری ندارید؟ ... هم اکنون ثبت نام کنید</a>
+        
+            </div>
+            <div class="mb-3 pb-4">
+                <a href="{% url 'password_reset' %}">رمز عبور خود را فراموش کرده اید؟</a>
+            </div>
+                {% csrf_token %}
+            </form>
+        </div>
+    </div>
+    </div>
+
+
+{% endblock %}

@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.contrib.staticfiles.urls import static
 from django.urls import path, include
-
+from accounts.views import LoginView, RegisterView
 from . import settings
 
 
@@ -24,6 +24,8 @@ from . import settings
 urlpatterns = [
                   path('grappelli/', include('grappelli.urls')),
                   path('admin/', admin.site.urls),
+                  path('login/', LoginView.as_view(), name='login'),
+                  path('register/', RegisterView.as_view(), name='register')
                   path('blog/', include('blog.urls')),
                   path('accounts/', include('django.contrib.auth.urls')),
 

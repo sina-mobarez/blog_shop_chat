@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'accounts.apps.AccountsConfig',
     'blog',
     'shop',
     'crispy_forms',
@@ -163,3 +164,9 @@ DEFAULT_FROM_EMAIL = 'default from email'
 
 GRAPPELLI_ADMIN_TITLE = 'Final Project'
 GRAPPELLI_CLEAN_INPUT_TYPES = True
+
+
+# custom user 
+
+AUTH_USER_MODEL = 'accounts.CustomUser'
+AUTHENTICATION_BACKENDS = ['accounts.backends.EmailBackend']
