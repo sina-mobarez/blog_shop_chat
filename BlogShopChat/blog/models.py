@@ -64,8 +64,8 @@ class Post(models.Model):
     bodytext = models.TextField(verbose_name=("message"))
     pic = models.ImageField("image", upload_to='uploads', height_field=None, width_field=None, max_length=None, blank=True, null=True)
     category = models.ManyToManyField(Category, verbose_name='category of this post')
-    tag = models.ManyToManyField(Tag, verbose_name=("tags of this post"), blank=True, null=True)
-    likes = models.ManyToManyField(User, verbose_name=("likes on post"), related_name= 'blog_posts')
+    tag = models.ManyToManyField(Tag, verbose_name=("tags of this post"))
+    likes = models.ManyToManyField(settings.AUTH_USER_MODEL, verbose_name=("likes on post"), related_name= 'blog_posts')
     post_date = models.DateTimeField(
         auto_now_add=True, verbose_name="post date")
     modified = models.DateTimeField(null=True, verbose_name=("modified"), blank=True)
@@ -111,12 +111,12 @@ class Post(models.Model):
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')
-    name = models.ForeignKey(User, verbose_name=("name of user"), on_delete=models.SET_NULL, null=True, blank=True)
+    name = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=("name of user"), on_delete=models.SET_NULL, null=True, blank=True)
     body = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     active = models.BooleanField(default=True)
-    likes = models.ManyToManyField(User, verbose_name=("likes on post"), related_name= 'blog_comments')
+    likes = models.ManyToManyField(settings.AUTH_USER_MODEL, verbose_name=("likes on post"), related_name= 'blog_comments')
 
     class Meta:
         ordering = ('created',)

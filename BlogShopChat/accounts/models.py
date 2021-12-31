@@ -16,7 +16,7 @@ import requests
 
 class UserManager(BaseUserManager):
    
-    def create_user(self, email, phone, password, **extra_fields):
+    def create_user(self, username, email, phone, password, **extra_fields):
         """
         Create and save a User with the given email, phone number and password.
         """
@@ -25,16 +25,16 @@ class UserManager(BaseUserManager):
         if not phone:
             raise ValueError('The Phone must be set')
         email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
-        user = self.model(phone=phone, **extra_fields)
+        user = self.model(email=email, phone=phone, username=username, **extra_fields)
         user.set_password(password)
         user.save()
         return user
 
-    def create_superuser(self, email, phone, password, **extra_fields):
+    def create_superuser(self, username, email, phone, password, **extra_fields):
         """
         Create and save a SuperUser with the given email, phone number and password.
         """
+
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_active', True)
@@ -44,7 +44,7 @@ class UserManager(BaseUserManager):
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
 
-        return self.create_user(email, phone, password, **extra_fields)
+        return self.create_user(username, email, phone, password, **extra_fields)
 
 
 class Country(models.Model):
@@ -57,16 +57,18 @@ class City(models.Model):
 
 
 class CustomUser(AbstractUser):
-    phone_regex = RegexValidator( regex = r'(0|\+98)?([ ]|-|[()]){0,2}9[1|2|3|4]([ ]|-|[()]){0,2}(?:[0-9]([ ]|-|[()]){0,2}){8}', message ="Phone number must be entered in the format +919999999999. Up to 10 digits allowed.")
+    phone_regex = RegexValidator( regex = r'^\+98\d{10}$', message ="Phone number must be entered in the format +989999999999. Up to 10 digits allowed.")
     phone = models.CharField('Phone number',validators =[phone_regex], max_length=14, unique=True,null=True)
     email = models.EmailField(_('email address'), unique=True)
-    REQUIRED_FIELD = ['username','phone', 'phone']
-    is_seller = models.BooleanField()
-    city = models.ForeignKey(City, verbose_name=_("where user is live"), on_delete=models.CASCADE)
+    REQUIRED_FIELDS = ['email', 'phone']
+    is_seller = models.BooleanField(default=False)
+    city = models.ForeignKey(City, verbose_name=_("where user is live"), on_delete=models.CASCADE, null=True, blank=True)
     address = models.CharField(max_length = 900, blank = True, null = True)
+
 
     objects = UserManager()  
 
 
     def __str__(self):
         return f'{self.phone} / {self.username}'     
+

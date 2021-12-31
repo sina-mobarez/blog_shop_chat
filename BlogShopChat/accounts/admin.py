@@ -8,8 +8,6 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 # from .forms import UserAdminCreationForm, UserAdminChangeForm
 
-from .models import PhoneOTP
-admin.site.register(PhoneOTP)
 
 
 class CustomUserAdmin(BaseUserAdmin):
@@ -17,10 +15,10 @@ class CustomUserAdmin(BaseUserAdmin):
     add_form = CustomUserCreationForm
     # form = CustomUserChangeForm
     model = User
-    list_display = ('username','email','phone', 'is_staff', 'is_active',)
+    list_display = ('username','email','phone', 'is_staff', 'is_active','address', 'is_seller')
     list_filter = ('username','email','phone','is_staff', 'is_active',)
     fieldsets = (
-        (None, {'fields': ('email', 'password')}),
+        (None, {'fields': ('email', 'password', 'address', 'is_seller'),}),
         ('Permissions', {'fields': ('is_staff', 'is_active')}),
     )
     add_fieldsets = (

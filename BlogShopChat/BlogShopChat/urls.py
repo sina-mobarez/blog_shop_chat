@@ -1,4 +1,4 @@
-"""weblog URL Configuration
+"""BlogShopChat URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.2/topics/http/urls/
@@ -25,7 +25,7 @@ urlpatterns = [
                   path('grappelli/', include('grappelli.urls')),
                   path('admin/', admin.site.urls),
                   path('login/', LoginView.as_view(), name='login'),
-                  path('register/', RegisterView.as_view(), name='register')
+                  path('register/', RegisterView.as_view(), name='register'),
                   path('blog/', include('blog.urls')),
                   path('accounts/', include('django.contrib.auth.urls')),
 
