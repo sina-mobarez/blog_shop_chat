@@ -62,10 +62,4 @@
 </div>
 {% endblock content %}
 
-{% block name-side %} Categories {% endblock name-side %}
 
-{% block sidebar %}
-  {% for cat in category %}
-    <div style="background: #344; min-height: 0; margin: 10px auto; padding: 30px 10px; text-align: center; color: #FFF;" !important> <a href="{{cat.get_absolute_url}}" style="color: white;;  text-decoration: none;" !important>{{cat.name}}</a></div>
-  {% endfor %}
-{% endblock sidebar %}

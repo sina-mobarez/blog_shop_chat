@@ -52,9 +52,6 @@ Dashboard
 
 
 {% endfor %}
-</div>
-
-
 {% if posts_published.has_other_pages %}
   <ul class="pagination">
     {% if posts_published.has_previous %}
@@ -80,6 +77,10 @@ Dashboard
 <hr>
 <button type="button" class="btn  btn-sm btn-success"><a href="{% url 'new_post' %}" style="color:black ; text-decoration: none;" !important>ایجاد پست جدید</a></button>
 {% endif %}
+</div>
+
+
+
 
 
 {% endblock content %}

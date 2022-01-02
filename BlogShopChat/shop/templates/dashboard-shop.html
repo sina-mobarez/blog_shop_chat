@@ -1,0 +1,219 @@
+{% extends "base_weblog.html" %}
+{% block title %}
+Dashboard
+{% endblock title %}
+
+{% block header %} عزیز خوش آمدید ! {{ user.username }}
+<hr>
+{% endblock header %}
+
+{% block slider %}
+{% if shop %}
+<div class="">
+  <h3>فروشگاه های شما :</h3>
+  <hr>
+</div>
+{% else %}
+<div class="">
+  <h3>شما هیچ فروشگاه فعالی ندارید </h3>
+  <hr>
+</div>
+{% endif %}
+
+{% endblock slider %}
+
+
+{% block content %}
+<div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+{% if shop %}
+{% for item in shop %}
+
+<div style="background-color: palegoldenrod; margin-top: 10px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px;" class="col-sm-4 col-md-4">
+        <div class="card text-white bg-dark" style="width: 18rem;">
+            <div class="card-body">
+            <h5 class="card-title"><a style="color: black;" href="">{{ item.name }}</a></h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{ item.type }}</h6>
+            <p class="card-text"></p>
+ <hr>
+ <hr>
+ <hr>
+            <a href="#" class="card-link">ویرایش</a>
+            <br>
+            <br>
+            <a href="#" class="card-link">حذف</a>
+            </div>
+        </div>
+</div>
+
+  {% if forloop.counter|divisibleby:3 %}
+  </div>
+  <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+  {% endif %}
+
+
+{% endfor %}
+{% if shop.has_other_pages %}
+  <ul class="pagination">
+    {% if shop.has_previous %}
+      <li><a href="?page={{ posts_published.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    {% for i in shop.paginator.page_range %}
+      {% if shop.number == i %}
+        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+      {% else %}
+        <li><a href="?page={{ i }}">{{ i }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if shop.has_next %}
+      <li><a href="?page={{ posts_published.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+{% endif %}
+{% elif have_shop_pending %}
+<div class="col-md-12">
+
+<p> فروشگاه شما در انتظار تایید است </p>
+
+</div>
+{% else %}
+<hr>
+<button type="button" class="btn  btn-sm btn-success"><a href="{% url 'new_post' %}" style="color:black ; text-decoration: none;" !important>ایجاد فروشگاه </a></button>
+{% endif %}
+</div>
+
+<div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+
+    <div class="col-md 12">
+
+<h3>محصولات شما :</h3>
+
+    </div>
+    <hr>
+    <br>
+{% for item in product %}
+        <div style="background-color: rgb(133, 228, 225); margin-top: 10px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px;" class="col-sm-3 col-md-3">
+            <div class="card text-white bg-dark" style="width: 18rem;">
+                <div class="card-body">
+                <h5 class="card-title">{{ item.name }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ item.category }}</h6>
+                <hr>
+                <hr>
+                <hr>
+                <p class="card-text">{{ item.description|truncatewords:15 }}</p>
+     <hr>
+
+     <h6 class="card-subtitle mb-2 text-muted">قیمت : {{ item.price }}</h6>
+                <br>
+                <br>
+     <h6 class="card-subtitle mb-2 text-muted">تعداد : {{ item.quantity }}</h6>
+
+                <a href="#" class="card-link">جزییات محصول</a>
+                </div>
+            </div>
+    </div>
+
+{% if forloop.counter|divisibleby:3 %}
+  </div>
+  <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+{% endif %}
+
+{% endfor %}
+{% if shop.has_other_pages %}
+  <ul class="pagination">
+    {% if shop.has_previous %}
+      <li><a href="?page={{ posts_published.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    {% for i in shop.paginator.page_range %}
+      {% if shop.number == i %}
+        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+      {% else %}
+        <li><a href="?page={{ i }}">{{ i }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if shop.has_next %}
+      <li><a href="?page={{ posts_published.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+{% endif %}
+</div>
+
+
+
+
+
+{% endblock content %}
+
+
+
+{% block sidebar %}
+{% if have_shop_pending %}
+<div class="list-group">
+  <a href="#" class="list-group-item active">
+    در انتظار تایید
+  </a>
+  <a href={{ post.get_absolute_url }} class="list-group-item">
+    <h4 class="list-group-item-heading">{{shop_pending.name}}</h4>
+    <p class="list-group-item-text">
+        <a class="badge bg-secondary text-decoration-none link-light" href="{% url 'post-tag' tag.id %}">{{shop_pending.type}}</a>
+    </p>
+</a>
+</div>
+{% endif %}
+
+
+
+<div class="list-group">
+  <a href="{% url 'edit_profile' %}" class="list-group-item">
+      <h4 class="list-group-item-heading">ویرایش پروفایل</h4>
+      <p class="list-group-item-text">شما میتوانید اسم کاربری و رمز عبور و ... خود را تغییر دهید</p>
+  </a>
+
+{% if have_shop_pending == False %}
+  <a href="{% url 'new_post' %}" class="list-group-item">
+      <h4 class="list-group-item-heading">ایجاد فروشگاه جدید</h4>
+      <p class="list-group-item-text">
+          ازین قسمت میتوانیدفروشگاه جدیدی را ایجاد کنید
+      </p>
+  </a>
+{% endif %}
+
+  <a href="{% url 'add-cat-tag' %}" class="list-group-item">
+      <h4 class="list-group-item-heading">ایجاد دسته بندی و تگ</h4>
+      <p class="list-group-item-text">شما میتوانید یک دسته بندی جدید یا تگی را ایجاد کنید</p>
+  </a>
+</div>
+
+  <div class="list-group">
+    <a href="#" class="list-group-item active">
+      دسته بندی های محصولات
+    </a>
+    {% for cat in category %}
+      <a href="{{ cat.slug }}" class="list-group-item">
+        <span class="badge">{{ cat.count_shop }}</span> {{cat.name}}
+      </a>
+    {% endfor %}
+  </div>
+
+  <div class="list-group">
+    <a href="#" class="list-group-item active">
+      تایپ های فروشگاه
+    </a>
+    {% for item in types %}
+      <a href="{% url 'post-tag' item.id %}" class="list-group-item">
+        <span class="badge">{{ item.count_product }}</span> {{item.name}}
+      </a>
+    {% endfor %}
+  </div>
+
+
+{% endblock sidebar %}
+
+

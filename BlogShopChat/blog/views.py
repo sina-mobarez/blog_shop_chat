@@ -96,6 +96,7 @@ class CategoryDetail(DetailView):
         return context
 
 
+
 class TagDetail(DetailView):
     model = Tag
     context_object_name = 'tag'

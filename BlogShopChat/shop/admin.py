@@ -36,7 +36,7 @@ class ShopAdmin(admin.ModelAdmin):
 
     fieldsets =(
         (None, {
-            'fields': (('name', 'slug'), 'type', 'status')
+            'fields': (('name', 'slug'), 'type', 'status', 'owner')
         }),
     )
 
@@ -52,7 +52,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 class CartAdmin(admin.ModelAdmin):
-    list_display = ('customer', 'order_number', 'created_at', 'status_payment','paid_amount', 'paid_date')
+    list_display = ('customer', 'order_number', 'created_at', 'shop', 'status_payment','paid_amount', 'paid_date')
     list_filter = ('status_payment',)
     search_fields = ('order_number',)
     date_hierarchy = ('created_at')
@@ -69,7 +69,7 @@ class CartItemAdmin(admin.ModelAdmin):
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('category','name', 'slug', 'description', 'price', 'quantity', 'date_added', 'show_image')
+    list_display = ('category','name', 'slug', 'price', 'quantity', 'date_added', 'shop', 'show_image')
     list_filter = ('name', 'price', 'category')
     search_fields = ('name',)
     date_hierarchy = ('date_added')
@@ -124,6 +124,7 @@ admin.site.register(Cart, CartAdmin)
 admin.site.register(CartItem, CartItemAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Picture, PictureAdmin)
+admin.site.register(Type)
 
 
 

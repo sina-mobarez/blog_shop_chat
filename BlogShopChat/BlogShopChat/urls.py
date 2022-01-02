@@ -23,6 +23,7 @@ from . import settings
 
 urlpatterns = [
                   path('grappelli/', include('grappelli.urls')),
+                  path('shop/', include('shop.urls')),
                   path('admin/', admin.site.urls),
                   path('login/', LoginView.as_view(), name='login'),
                   path('register/', RegisterView.as_view(), name='register'),

@@ -9,6 +9,7 @@ from django.template.defaultfilters import slugify
 
 from django.core.files import File
 from django.db import models
+from django.urls.base import reverse
 
 
 class EliminatedManager(models.Manager):
@@ -48,13 +49,13 @@ class Category(models.Model):
 
     
     def get_absolute_url(self):
-        return f'/{self.slug}/'
+        return reverse("post-category", kwargs={"slug": self.slug})
 
 
 
 class Type(models.Model):
-    name = models.CharField(max_length=255)
-    slug = models.SlugField(blank=True)
+    name = models.CharField('name', max_length=255)
+    slug = models.SlugField('slug' , blank=True)
 
     class Meta:
         ordering = ('name',)
@@ -70,7 +71,7 @@ class Type(models.Model):
 
     
     def get_absolute_url(self):
-        return f'/{self.slug}/'        
+        return reverse("post-category", kwargs={"slug": self.slug})        
 
 
 
@@ -88,7 +89,7 @@ class Shop(models.Model):
     type = models.ForeignKey(Type, verbose_name="type of shop", on_delete=models.CASCADE)
     status = models.CharField(max_length=3, choices=STATUS, default=PENDING)
     date_created = models.DateTimeField(auto_now_add=True)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="owner of product", on_delete=models.CASCADE)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="owner of shop", on_delete=models.CASCADE)
     
 
     objects= models.Manager()
@@ -108,7 +109,7 @@ class Shop(models.Model):
 
 
 class Product(models.Model):
-    category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     slug = models.SlugField(blank=True)
     description = models.TextField(blank=True, null=True)
@@ -162,7 +163,7 @@ class Picture(models.Model):
 
     def get_image(self):
         if self.image:
-            return 'http://127.0.0.1:8000' + self.image.url
+            return self.image.url
         return ''
 
 

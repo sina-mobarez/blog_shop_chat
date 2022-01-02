@@ -14,7 +14,7 @@ from . import models
 
 class PostAdmin(admin.ModelAdmin):
     readonly_fields = ('comment_count',)
-    list_display = ('title','slug', 'bodytext', 'image')
+    list_display = ('title','slug', 'image')
     list_filter = ('post_date',)
     search_fields = ('title',)
 
@@ -33,7 +33,7 @@ class PostAdmin(admin.ModelAdmin):
 
     fieldsets = (
         (None, {
-            'fields': ('title', 'bodytext','pic',('category', 'tag'))
+            'fields': ('title', 'bodytext','pic',('category', 'tag'), 'posted_by', 'status')
         }),
     
 
