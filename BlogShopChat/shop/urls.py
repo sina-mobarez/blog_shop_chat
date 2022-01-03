@@ -7,6 +7,7 @@ from .views import *
 
 urlpatterns = [
     path('dashboard/', Dashboard.as_view(), name="dashboard-shop"),
+    path('dashboard/<slug:slug>', ShopDetail.as_view(), name="shop-detail")
 
 
 

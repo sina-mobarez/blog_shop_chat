@@ -106,6 +106,13 @@ class Shop(models.Model):
     def __str__(self):
         return f'{self.name}'
 
+    def get_absolute_url(self):
+        kwargs = {
+            'slug': self.slug,
+        }
+
+        return reverse('shop-detail', kwargs=kwargs)
+
 
 
 class Product(models.Model):
