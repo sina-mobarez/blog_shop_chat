@@ -28,7 +28,7 @@ Dashboard
 {% if shop %}
 {% for item in shop %}
 
-<div style="background-color: palegoldenrod; margin-top: 10px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px;" class="col-sm-4 col-md-4">
+<div style="background-color: palegoldenrod; margin-top: 10px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px;" class="col-sm-3 col-md-3">
         <div class="card text-white bg-dark" style="width: 18rem;">
             <div class="card-body">
             <h5 class="card-title"><a style="color: black;" href="{{ item.get_absolute_url }}">{{ item.name }}</a></h5>
@@ -37,10 +37,10 @@ Dashboard
  <hr>
  <hr>
  <hr>
-            <a href="#" class="card-link">ویرایش</a>
+            <a href="{% url 'update-shop' slug=item.slug %}" class="card-link">ویرایش</a>
             <br>
             <br>
-            <a href="#" class="card-link">حذف</a>
+            <a href="{% url 'delete-shop' slug=item.slug %}" class="card-link">حذف</a>
             </div>
         </div>
 </div>
@@ -52,27 +52,7 @@ Dashboard
 
 
 {% endfor %}
-{% if shop.has_other_pages %}
-  <ul class="pagination">
-    {% if shop.has_previous %}
-      <li><a href="?page={{ posts_published.previous_page_number }}">&laquo;</a></li>
-    {% else %}
-      <li class="disabled"><span>&laquo;</span></li>
-    {% endif %}
-    {% for i in shop.paginator.page_range %}
-      {% if shop.number == i %}
-        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
-      {% else %}
-        <li><a href="?page={{ i }}">{{ i }}</a></li>
-      {% endif %}
-    {% endfor %}
-    {% if shop.has_next %}
-      <li><a href="?page={{ posts_published.next_page_number }}">&raquo;</a></li>
-    {% else %}
-      <li class="disabled"><span>&raquo;</span></li>
-    {% endif %}
-  </ul>
-{% endif %}
+
 {% elif have_shop_pending %}
 <div class="col-md-12">
 
@@ -81,9 +61,31 @@ Dashboard
 </div>
 {% else %}
 <hr>
-<button type="button" class="btn  btn-sm btn-success"><a href="{% url 'new_post' %}" style="color:black ; text-decoration: none;" !important>ایجاد فروشگاه </a></button>
+<button type="button" class="btn  btn-sm btn-success"><a href="{% url 'create-shop' %}" style="color:black ; text-decoration: none;" !important>ایجاد فروشگاه </a></button>
 {% endif %}
 </div>
+
+{% if is_paginated %}
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+      <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    {% for i in paginator.page_range %}
+      {% if page_obj.number == i %}
+        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+      {% else %}
+        <li><a href="?page={{ i }}">{{ i }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+      <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+{% endif %}
 
 <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
 
@@ -155,16 +157,18 @@ Dashboard
 
 {% block sidebar %}
 {% if have_shop_pending %}
-<div class="list-group">
+<div class="list-group thumbnail">
   <a href="#" class="list-group-item active">
     در انتظار تایید
   </a>
-  <a href={{ post.get_absolute_url }} class="list-group-item">
-    <h4 class="list-group-item-heading">{{shop_pending.name}}</h4>
+{% for i  in shop_pending  %}
+  <a href={{ i.get_absolute_url }} class="list-group-item">
+    <h4 class="list-group-item-heading">{{i.name}}</h4>
     <p class="list-group-item-text">
-        <a class="badge bg-secondary text-decoration-none link-light" href="{% url 'post-tag' tag.id %}">{{shop_pending.type}}</a>
+        <a class="badge bg-secondary text-decoration-none link-light" href="#">{{i.type}}</a>
     </p>
 </a>
+{% endfor %}
 </div>
 {% endif %}
 
@@ -177,7 +181,7 @@ Dashboard
   </a>
 
 {% if have_shop_pending == False %}
-  <a href="{% url 'new_post' %}" class="list-group-item">
+  <a href="{% url 'create-shop' %}" class="list-group-item">
       <h4 class="list-group-item-heading">ایجاد فروشگاه جدید</h4>
       <p class="list-group-item-text">
           ازین قسمت میتوانیدفروشگاه جدیدی را ایجاد کنید
@@ -185,7 +189,7 @@ Dashboard
   </a>
 {% endif %}
 
-  <a href="{% url 'add-cat-tag' %}" class="list-group-item">
+  <a href="{% url 'add-type-category' %}" class="list-group-item">
       <h4 class="list-group-item-heading">ایجاد دسته بندی و تگ</h4>
       <p class="list-group-item-text">شما میتوانید یک دسته بندی جدید یا تگی را ایجاد کنید</p>
   </a>
@@ -207,7 +211,7 @@ Dashboard
       تایپ های فروشگاه
     </a>
     {% for item in types %}
-      <a href="{% url 'post-tag' item.id %}" class="list-group-item">
+      <a href="#" class="list-group-item">
         <span class="badge">{{ item.count_shop }}</span> {{item.name}}
       </a>
     {% endfor %}
