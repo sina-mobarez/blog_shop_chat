@@ -1,0 +1,59 @@
+{% extends "base_form.html" %}
+{% load crispy_forms_tags %}
+{% load widget_tweaks %}
+{% block content %}
+<div class="container">
+
+    <h1 class="text-center mt-5">اضافه کردن محصول </h1>
+    <hr>
+    
+    <div class="row" >
+        <div class="col-4 mx-auto" style="direction: rtl;">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% for hidden in postForm.hidden_fields %}
+                    {{ hidden }}
+                {% endfor %}
+             
+                {% for form in postForm %}
+                    {{ form.label }}
+                    {{ form }}
+                {% endfor %}
+
+            </br>
+                <h3> انتخاب عکس  </h3>
+ <hr>            
+                {{ formset.management_form }}
+                {% for form in formset %}
+                <div class="form-group"> 
+                    <label for="Input">عنوان :</label>
+                    {{ form.name|attr:"rows:20"|attr:"cols:20"|attr:"class:form-control"|attr:"placeholder:اسم عکس را وارد کنید"|attr:"id:Input" }}
+                    <small id="UserlHelp" class="form-text text-muted"></small>
+                </div>
+                <div class="form-group"> 
+
+        
+                    {{ form.image|attr:"rows:20"|attr:"cols:20"|attr:"class:form-control"|attr:"placeholder:description"|attr:"id:Input" }}
+                    <small id="UserlHelp" class="form-text text-muted"></small>
+                </div>
+
+                <div class="form-group"> 
+                    <label for="Input">پیش فرض : </label>
+        
+                    {{ form.default|attr:"id:Input" }}
+                    <small id="UserlHelp" class="form-text text-muted"></small>
+                </div>
+            </br>
+                <hr>
+
+  
+                {% endfor %}
+                <input type="submit" class="btn btn-success btn-block" value="ثبت محصول">
+                </br>
+            </form>
+        </div>
+    </div>
+    </div>
+
+
+{% endblock %}

@@ -12,6 +12,18 @@ urlpatterns = [
     path('delete-shop/<slug:slug>', DeleteShop.as_view(), name='delete-shop'),
     path('update-shop/<slug:slug>', UpdateShop.as_view(), name='update-shop'),
     path('add-type-category', AddTypeCategory.as_view(), name='add-type-category'),
+    path('add-product<slug:slug>/', add_product, name='add-product'),
+    path('product/<slug:slug>', ProductDetail.as_view(), name='product-detail'),
+    path('category-product/<slug:slug>', CategoryDetail.as_view(), name='category-product'),
+    path('type-shop/<slug:slug>', TypeDetail.as_view(), name='type-shop'),
+    path('delete-category/<slug:slug>', DeleteCategory.as_view(), name='delete-category'),
+    path('edit-category/<slug:slug>', EditCategory.as_view(), name='edit-category'),
+    path('delete-type/<slug:slug>', DeleteType.as_view(), name='delete-type'),
+    path('edit-type/<slug:slug>', EditType.as_view(), name='edit-type'),
+
+
+
+
 
 
 

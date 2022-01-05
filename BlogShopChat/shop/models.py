@@ -32,8 +32,8 @@ def unique_slugify(instance, slug):
     return unique_slug
 
 class Category(models.Model):
-    name = models.CharField(max_length=255)
-    slug = models.SlugField(blank=True)
+    name = models.CharField('name',max_length=255)
+    slug = models.SlugField('slug',blank=True)
 
     class Meta:
         ordering = ('name',)
@@ -86,7 +86,7 @@ class Shop(models.Model):
     ]
     name = models.CharField(max_length=250)
     slug = models.SlugField(blank=True)
-    type = models.ForeignKey(Type, verbose_name="type of shop", on_delete=models.CASCADE)
+    type = models.ForeignKey(Type, verbose_name="type of shop", on_delete=models.DO_NOTHING)
     status = models.CharField(max_length=3, choices=STATUS, default=PENDING)
     date_created = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="owner of shop", on_delete=models.CASCADE)
@@ -116,7 +116,7 @@ class Shop(models.Model):
 
 
 class Product(models.Model):
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.DO_NOTHING)
     name = models.CharField(max_length=255)
     slug = models.SlugField(blank=True)
     description = models.TextField(blank=True, null=True)
@@ -138,7 +138,10 @@ class Product(models.Model):
         super().save(*args, **kwargs)
 
     def get_default(self):
-        return self.picture_set.filter(default=True).first()
+        if self.picture_set.filter(default=True).first():
+            return self.picture_set.filter(default=True).first().image.url
+        else:
+            return self.picture_set.all().first().image.url
 
     def get_thumbnail_default(self):
         return self.picture_set.filter(default=True).first().get_thumbnail()
@@ -234,7 +237,7 @@ class Cart(models.Model):
 
 
 class CartItem(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.DO_NOTHING)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
     price = models.DecimalField(max_digits=12, decimal_places=3,blank=True)

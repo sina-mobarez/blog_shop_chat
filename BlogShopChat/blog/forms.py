@@ -1,10 +1,9 @@
 from django import forms
 from django.contrib.auth import password_validation
 from django.contrib.auth.forms import ReadOnlyPasswordHashField, UserCreationForm, UserChangeForm, PasswordChangeForm
-from django.contrib.auth.models import User
 from django.forms import fields
 
-
+from accounts.models import CustomUser
 from .models import *
 
 class CategoryForm(forms.ModelForm):
@@ -127,12 +126,13 @@ class UserChangeForm(UserChangeForm):
     )
 
     class Meta:
-        model = User
-        fields = ('username', 'first_name', 'last_name', 'is_active','email')
+        model = CustomUser
+        fields = ('username', 'first_name', 'last_name', 'is_active', 'address', 'city', 'is_seller', 'email', 'phone')
         labels = {
 			'username': "نام کاربری",
 			'first_name': "نام",
 			'last_name': "نام خانوادگی",
 			'is_active': "کاربر فعال",
 			'email': "ایمیل",
+            'phone': 'شماره مبایل'
 		}

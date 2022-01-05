@@ -1,8 +1,9 @@
 from django import forms
 from django.forms import fields
+from django.forms.widgets import Textarea
 
-from blog.models import Category
-from .models import Shop, Type
+
+from .models import Picture, Product, Shop, Type, Category
 
 
 class ShopForm(forms.ModelForm):
@@ -35,4 +36,41 @@ class CategoryForm(forms.ModelForm):
         fields = ('name',)
         labels = {
             'name': 'نام دسته بندی'
-        }       
+        }  
+        
+    
+
+
+class ProductForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ('name', 'price', 'category', 'description', 'quantity')  
+        labels = {
+            'name': 'نام محصول',
+            'price': 'قیمت ',
+            'category': 'دسته بندی ',
+            'description': 'توضیحات',
+            'quantity': 'تعداد موجودی'
+        } 
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'}),
+            'price': forms.NumberInput(attrs={'class': 'form-control'}),
+            'category': forms.Select(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'col': 30, 'row': 10}),
+            'quantity': forms.NumberInput(attrs={'class': 'form-control'}),
+
+        } 
+
+
+class PictureForm(forms.ModelForm):
+    class Meta:
+        model = Picture
+        fields = ('name', 'image', 'default')
+        labels = {
+            'name': '',
+            'image': '',
+            'default': ''
+        }
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'اسم عکس '}),
+        } 

@@ -3,20 +3,17 @@
 <div class="row text-center">
     <div class="col-md-12 mt-5 mb-5 pb-5">
         <div style="box-shadow: 10px 10px 5px grey; direction: rtl;" class="shadow-box-example hoverable flex-center">
-            <h3 class="white-text">ایا از حذف این فروشگاه اطمینان دارید؟ <b>{{ object }}</b> </h3>
+            <h3 class="white-text">ایا از حذف این دسته بندی اطمینان دارید؟ <b>{{ category.name }}</b> </h3>
             <form action="" method="POST">
                 {% csrf_token %}
             <hr>
-            <div style="visibility: hidden;">
-            {{ form }}
-          </div>
             </br>
                <div class="text-center mt-2">
                  <button type="submit" style="width: 100%;" class=" btn btn-danger send-button tx-tfm mt-2">حذف کردن</button>
               </div>
             </br>
               <div class="text-center mt-3">
-                <button type="button" class="btn btn-sm btn-info mt-2"><a href="{% url 'shop-detail' slug=object.slug %}" style="color:black ;text-decoration: none;" !important>انصراف</a></button>
+                <button type="button" class="btn btn-sm btn-info mt-2"><a href="{% url 'add-type-category' %}" style="color:black ;text-decoration: none;" !important>انصراف</a></button>
              </div>
             </br>
               </form>
@@ -24,3 +21,4 @@
     </div>
 </div>
 {% endblock content %}
+

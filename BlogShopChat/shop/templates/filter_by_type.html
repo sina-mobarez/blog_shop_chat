@@ -1,0 +1,127 @@
+{% extends "base_shop.html" %}
+{% block title %}
+Product
+{% endblock title %}
+
+{% block header %}
+{% endblock header %}
+
+{% block slider %}
+
+<div class="">
+  <h3>فروشگاه های مربوط به  این نوع : {{ type.name }}</h3>
+  <hr>
+</div>
+
+{% endblock slider %}
+
+
+{% block content %}
+{% if type.shop_set.all %}
+
+<div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+
+{% for item in type.shop_set.all %}
+
+  
+  <div class="col-sm-12 col-md-12">
+    <div class="thumbnail">
+        <div class="caption">
+            <h3 style="color: #428bca;">{{item.name}}</h3>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item"><p class="card-text"><small class="text-muted">نوع فروشگاه :<b>{{item.type}}</small></p></li>
+            </ul>
+            <p><a href="{{ item.get_absolute_url }}">جزییات</a></p>
+        </div>
+        <div class="card-footer text-muted text-center">
+          {{post.post_date}}
+        </div>
+    </div>
+  </div>
+  {% if forloop.counter|divisibleby:1 %}
+  </div>
+  <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+  {% endif %}
+
+
+{% endfor %}
+</div>
+
+
+{% if is_paginated %}
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+      <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    {% for i in paginator.page_range %}
+      {% if page_obj.number == i %}
+        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+      {% else %}
+        <li><a href="?page={{ i }}">{{ i }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+      <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+{% endif %}
+{% else %}
+<div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+  <div class="col-md-8">
+    <h5>برای این دسته بندی هنوز محصولی به ثبت نرسیده</h5>
+    <hr>
+    
+  </div>
+</div>
+
+{% endif %}
+
+{% endblock content %}
+
+
+
+{% block sidebar %}
+
+
+
+
+<div class="list-group">
+
+
+
+  <a href="{% url 'add-type-category' %}" class="list-group-item">
+      <h4 class="list-group-item-heading">ایجاد دسته بندی و تگ</h4>
+      <p class="list-group-item-text">شما میتوانید یک دسته بندی جدید یا تگی را ایجاد کنید</p>
+  </a>
+</div>
+
+  <div class="list-group">
+    <a href="#" class="list-group-item active">
+        فیلتر بر اساس دسته بندی
+    </a>
+    {% for cat in category %}
+      <a href="{% url 'category-product' slug=cat.slug %}" class="list-group-item">
+        <span class="badge">{{ cat.count_product }}</span> {{cat.name}}
+      </a>
+    {% endfor %}
+  </div>
+
+  <div class="list-group">
+    <a href="#" class="list-group-item active">
+        فیلتر بر اساس نوع فروشگاه
+    </a>
+    {% for item in types %}
+      <a href="{% url 'type-shop' slug=item.slug %}" class="list-group-item">
+        <span class="badge">{{ item.count_shop }}</span> {{item.name}}
+      </a>
+    {% endfor %}
+  </div>
+
+
+{% endblock sidebar %}
+
+

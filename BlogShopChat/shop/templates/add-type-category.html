@@ -27,37 +27,17 @@
 
   <nav style="direction: rtl;" class="navbar navbar-expand-lg navbar-inverse navbar-dark bg-dark">
     <div class="container-fluid">
-      <a class="navbar-brand" href="{% url 'post_list' %}">بلاگ</a>
+      <a class="navbar-brand" href="{% url 'dashboard-shop' %}">فروشگاه</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="{% url 'post_list' %}">صفحه ی اصلی</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'contact' %}">تماس با ما</a>
-          </li>
-          {% if user.is_authenticated %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'dashboard-shop' %}">داشبورد</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'post_list' %}">بلاگ</a></li>
 
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'logout' %}">خارج شدن</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'dashboard' %}">داشبورد</a>
-          </li>
-          {% else %}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'signup' %}">ثبت نام</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'login' %}">وارد شدن</a>
-          </li>
-          {% endif %}
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'contact' %}">تماس با ما</a>
-          </li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}">تماس با ما</a></li>
+
 
         </ul>
       </div>
@@ -84,8 +64,8 @@
                             {% for tag in tags %}
                             <tr>
                                 <th> <a href="#" style="text-decoration: none;" !important>{{tag.name}}</a> </th>
-                                <th scope="col"> <button type="button" class="btn  btn-sm btn-danger"><a href="{% url 'delete-t' id=tag.id %}" style="color:black ; text-decoration: none;" !important>حذف</a></button> </th>
-                                <th scope="col"> <button type="button" class="btn  btn-sm btn-warning"><a href="{% url 'edit-t' id=tag.id %}" style="color:black ; text-decoration: none;" !important>ویرایش</a></button> </th>
+                                <th scope="col"> <button type="button" class="btn  btn-sm btn-danger"><a href="{% url 'delete-type' slug=tag.slug %}" style="color:black ; text-decoration: none;" !important>حذف</a></button> </th>
+                                <th scope="col"> <button type="button" class="btn  btn-sm btn-warning"><a href="{% url 'edit-type' slug=tag.slug %}" style="color:black ; text-decoration: none;" !important>ویرایش</a></button> </th>
                             </tr>
                             {% endfor %}
                         
@@ -112,8 +92,8 @@
                             {% for cat in category %}
                             <tr>
                                 <th> <a href="#" style="text-decoration: none;" !important>{{cat.name}}</a></th>
-                                <th scope="col"> <button type="button" class="btn btn-sm btn-danger"><a href="{% url 'delete-c' id=cat.id %}" style="color:black ;text-decoration: none;" !important>حذف</a></button> </th>
-                                <th scope="col"> <button type="button" class="btn btn-sm btn-warning"><a href="{% url 'edit-c' id=cat.id %}" style="color:black ;text-decoration: none;" !important>ویرایش</a></button> </th>
+                                <th scope="col"> <button type="button" class="btn btn-sm btn-danger"><a href="{% url 'delete-category' slug=cat.slug %}" style="color:black ;text-decoration: none;" !important>حذف</a></button> </th>
+                                <th scope="col"> <button type="button" class="btn btn-sm btn-warning"><a href="{% url 'edit-category' slug=cat.slug %}" style="color:black ;text-decoration: none;" !important>ویرایش</a></button> </th>
                             </tr>
                             {% endfor %}
                     </tbody>
@@ -134,7 +114,7 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="{% url 'add-type-category' %}" method="POST">
+                <form id="category_form"  action="{% url 'add-type-category' %}" method="POST">
                     {% csrf_token %}
              {% for field in catform %}
                    <div class="form-group">
@@ -142,7 +122,7 @@
                    </div>
                    {% endfor %}
                    <div class="text-center ">
-                     <button type="submit" class=" btn btn-block send-button tx-tfm">ایجاد دسته بندی </button>
+                     <button type="submit" name='category10' class=" btn btn-block send-button tx-tfm">ایجاد دسته بندی </button>
                   </div>
                   </form>
                 

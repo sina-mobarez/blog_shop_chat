@@ -1,16 +1,10 @@
-{% extends "base_weblog.html" %}
-{% block title %}
-Dashboard
-{% endblock title %}
+{% extends "base_shop.html" %}
 
-{% block header %} عزیز خوش آمدید ! {{ user.username }}
-<hr>
-{% endblock header %}
 
 {% block slider %}
 {% if shop %}
 <div class="">
-  <h3>فروشگاه های شما :</h3>
+  <h3>{{ shop.name }}</h3>
   <hr>
 </div>
 {% else %}
@@ -27,21 +21,16 @@ Dashboard
 <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
 {% if shop %}
 
-<div style="background-color: palegoldenrod; margin-top: 10px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px;" class="col-sm-4 col-md-4">
-        <div class="card text-white bg-dark" style="width: 18rem;">
-            <div class="card-body">
-            <h5 class="card-title"><a style="color: black;" href="{{ shop.get_absolute_url }}">{{ shop.name }}</a></h5>
-            <h6 class="card-subtitle mb-2 text-muted">{{ shop.type }}</h6>
-            <p class="card-text"></p>
- <hr>
- <hr>
- <hr>
-            <a href="#" class="card-link">ویرایش</a>
-            <br>
-            <br>
-            <a href="#" class="card-link">حذف</a>
-            </div>
-        </div>
+<div class="col-sm-12 col-md-12">
+  <div class="thumbnail">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item"><p class="card-text"><small class="text-muted">نوع فروشگاه :<b>{{shop.type}}</small></p></li>
+          </ul>
+
+      <div class="card-footer text-muted text-center">
+         تعداد محصولات : {{ product_count }}
+      </div>
+  </div>
 </div>
 
   
@@ -85,32 +74,29 @@ Dashboard
 
     <div class="col-md 12">
 
-<h3>محصولات این فروشگاه :</h3>
+<h3> محصولات :</h3>
 
     </div>
     <hr>
     <br>
 {% for item in product %}
-        <div style="background-color: rgb(133, 228, 225); margin-top: 10px; margin-bottom: 10px; margin-left: 10px; margin-right: 10px;" class="col-sm-3 col-md-3">
-            <div class="card text-white bg-dark" style="width: 18rem;">
-                <div class="card-body">
-                <h5 class="card-title">{{ item.name }}</h5>
-                <h6 class="card-subtitle mb-2 text-muted">{{ item.category }}</h6>
-                <hr>
-                <hr>
-                <hr>
-                <p class="card-text">{{ item.description|truncatewords:15 }}</p>
-     <hr>
 
-     <h6 class="card-subtitle mb-2 text-muted">قیمت : {{ item.price }}</h6>
-                <br>
-                <br>
-     <h6 class="card-subtitle mb-2 text-muted">تعداد : {{ item.quantity }}</h6>
-
-                <a href="#" class="card-link">جزییات محصول</a>
-                </div>
-            </div>
-    </div>
+<div class="col-sm-4 col-md-4">
+  <div class="thumbnail">
+      <img src="{{ item.get_default }}" alt="...">
+      <div class="caption">
+          <h3 style="color: #428bca;">{{item.name}}</h3>
+          <p>{{ item.description|truncatewords:30 }}</p>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item"><p class="card-text"><small class="text-muted">قیمت :<b>{{item.price}}</small></p></li>
+          </ul>
+          <p><a href="{% url 'product-detail' slug=item.slug %}">جزییات محصول</a></p>
+      </div>
+      <div class="card-footer text-muted text-center">
+        تعداد : {{ item.quantity }}
+      </div>
+  </div>
+</div>
 
 {% if forloop.counter|divisibleby:3 %}
   </div>
@@ -167,6 +153,11 @@ Dashboard
 
 
 <div class="list-group">
+  <a href="{% url 'add-product' slug=shop.slug %}" class="list-group-item">
+    <h4 class="list-group-item-heading">اضافه کردن محصول</h4>
+    <p class="list-group-item-text">شما میتوانید از این قسمت به فروشگاه خود محصول اضافه کنید</p>
+  </a>
+
   <a href="{% url 'edit_profile' %}" class="list-group-item">
       <h4 class="list-group-item-heading">ویرایش پروفایل</h4>
       <p class="list-group-item-text">شما میتوانید اسم کاربری و رمز عبور و ... خود را تغییر دهید</p>
@@ -187,27 +178,21 @@ Dashboard
   </a>
 </div>
 
-  <div class="list-group">
-    <a href="#" class="list-group-item active">
-      دسته بندی های محصولات
+<div class="list-group">
+  <a href="#" class="list-group-item active">
+    
+  </a>
+  
+    <a href="{% url 'delete-shop' slug=shop.slug %}" class="list-group-item">
+      <span class="badge"></span> حذف فروشگاه
     </a>
-    {% for cat in category %}
-      <a href="{{ cat.slug }}" class="list-group-item">
-        <span class="badge">{{ cat.count_product }}</span> {{cat.name}}
-      </a>
-    {% endfor %}
-  </div>
+    <a href="{% url 'update-shop' slug=shop.slug %}" class="list-group-item">
+      <span class="badge"></span> ویرایش فروشگاه
+    </a>
+  
+</div>
 
-  <div class="list-group">
-    <a href="#" class="list-group-item active">
-      تایپ های فروشگاه
-    </a>
-    {% for item in types %}
-      <a href="{% url 'post-tag' item.id %}" class="list-group-item">
-        <span class="badge">{{ item.count_shop }}</span> {{item.name}}
-      </a>
-    {% endfor %}
-  </div>
+
 
 
 {% endblock sidebar %}
