@@ -1,6 +1,6 @@
 from io import BytesIO
 from os import name
-from random import choice
+from random import choice, randint
 import random
 from PIL import Image
 from django.conf import settings
@@ -30,6 +30,16 @@ def unique_slugify(instance, slug):
     while model.objects.filter(slug=unique_slug).exists():
         unique_slug = slug + str(random.randint(0, 12000))
     return unique_slug
+
+
+def unique_order_number(instance, prefix):
+    model = instance.__class__
+    unique_number = prefix
+    while model.objects.filter(order_number=prefix).exists():
+        unique_number = unique_number + str(random.randint(0, 12000))
+    return unique_number
+
+
 
 class Category(models.Model):
     name = models.CharField('name',max_length=255)
@@ -87,6 +97,7 @@ class Shop(models.Model):
     name = models.CharField(max_length=250)
     slug = models.SlugField(blank=True)
     type = models.ForeignKey(Type, verbose_name="type of shop", on_delete=models.DO_NOTHING)
+    description = models.TextField()
     status = models.CharField(max_length=3, choices=STATUS, default=PENDING)
     date_created = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="owner of shop", on_delete=models.CASCADE)
@@ -144,7 +155,10 @@ class Product(models.Model):
             return self.picture_set.all().first().image.url
 
     def get_thumbnail_default(self):
-        return self.picture_set.filter(default=True).first().get_thumbnail()
+        if self.picture_set.filter(default=True).first():
+            return self.picture_set.filter(default=True).first().thumbnail.url
+        else:
+            return self.picture_set.all().first().thumbnail.url
     
     def get_absolute_url(self):
         return f'/{self.category}/{self.slug}/'
@@ -211,7 +225,7 @@ class Cart(models.Model):
     CHOICES = [(Paid, 'paid'),(Canceled, 'canceled'),(Pending, 'pending'), (Confirmed, 'confirmed')]
     status_payment = models.CharField(max_length=3,choices= CHOICES, default=Pending)
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING)
-    order_number = models.CharField(max_length=10)
+    order_number = models.CharField(max_length=23,blank=True)
     shop = models.ForeignKey(Shop, verbose_name="shop of cart", on_delete=models.DO_NOTHING)
     created_at = models.DateTimeField(auto_now_add=True)
     paid_amount = models.DecimalField(max_digits=12, decimal_places=0, blank=True, null=True)
@@ -232,6 +246,8 @@ class Cart(models.Model):
                 quantity = item.quantity
                 final_price += price * quantity
             self.paid_amount = final_price
+        if not self.order_number:
+            self.order_number = unique_order_number(self, 1000 )
         super().save(*args, **kwargs)
 
 

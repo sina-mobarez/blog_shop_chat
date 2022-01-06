@@ -1,6 +1,5 @@
 from django import forms
-from django.forms import fields
-from django.forms.widgets import Textarea
+
 
 
 from .models import Picture, Product, Shop, Type, Category
@@ -9,10 +8,11 @@ from .models import Picture, Product, Shop, Type, Category
 class ShopForm(forms.ModelForm):
     class Meta:
         model = Shop
-        fields = ('name', 'type')
+        fields = ('name', 'type', 'description')
         labels = {
 			'name': "نام فروشگاه",
             'type': "نوع فروشگاه",
+            'description': "توضیحات فروشگاه"
 		}
 
 

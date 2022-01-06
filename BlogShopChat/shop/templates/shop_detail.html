@@ -23,6 +23,8 @@
 
 <div class="col-sm-12 col-md-12">
   <div class="thumbnail">
+          <p> {{ shop.description }} </p>
+          <br>
           <ul class="list-group list-group-flush">
             <li class="list-group-item"><p class="card-text"><small class="text-muted">نوع فروشگاه :<b>{{shop.type}}</small></p></li>
           </ul>
@@ -189,6 +191,19 @@
     <a href="{% url 'update-shop' slug=shop.slug %}" class="list-group-item">
       <span class="badge"></span> ویرایش فروشگاه
     </a>
+  
+</div>
+
+<div class="list-group">
+  <a href="#" class="list-group-item active">
+    لیست سبد خرید ({{ order_count }})
+  </a>
+  {% for item in order %}
+    <a href="{% url 'cart-detail' pk=item.pk %}" class="list-group-item">
+      <span class="badge">{{ item.created_at }}</span> {{ item.order_number }}
+    </a>
+  {% endfor %}
+
   
 </div>
 

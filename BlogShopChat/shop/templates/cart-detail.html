@@ -1,0 +1,127 @@
+{% extends "base_shop.html" %}
+
+
+{% block slider %}
+<div class="">
+  <h3>شماره ی سفارش :{{ cart.order_number }}</h3>
+  <hr>
+</div>
+
+
+{% endblock slider %}
+
+
+{% block content %}
+<div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+
+
+<div class="col-sm-12 col-md-12">
+  <div class="thumbnail">
+          <p> {{ shop.description }} </p>
+          <br>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item"><p class="card-text"><small class="text-muted">وضعیت :<b>{{ cart.status_payment }}</small></p></li>
+            <li class="list-group-item"><p class="card-text"><small class="text-muted">اسم خریدار :<b>{{cart.customer.username}}</small></p></li>
+            <li class="list-group-item"><p class="card-text"><small class="text-muted">تغییر وضعیت :<b><button class="btn btn-success pull-left" onclick="change(this)" status="enable" id="status">
+                enable
+             </button></small></p></li>
+          
+            </ul>
+
+      <div class="card-footer text-muted text-center">
+         تاریخ ایجاد :{{ cart.created_at }}
+      </div>
+      {% if cart.paid_date %}
+      <hr>
+      <div class="card-footer text-muted text-center">
+        تاریخ پرداخت :{{ cart.paid_date }}
+     </div>
+     {% endif %}
+  </div>
+</div>
+
+  
+
+
+
+
+<div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+
+    <div class="col-md 12">
+
+
+
+            <div class="site-blocks-table thumbnail">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="product-thumbnail">عکس محصول</th>
+                            <th class="product-name">نام محصول</th>
+                            <th class="product-price">قیمت</th>
+                            <th class="product-quantity">تعداد</th>
+                            <th class="product-remove">حذف کردن</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>{% for item in items %}
+                            {% with product=item.product %}
+                        <tr>
+                            <td class="product-thumbnail">
+                                <img src="{{ product.get_thumbnail_default }}" alt="Image" class="img-fluid">
+                            </td>
+                            <td class="product-name">
+                                <h2 class="h5 text-black">{{ product.name }}</h2>
+                            </td>
+                            <td>${{ item.price }}</td>
+                            <td> {{ item.quantity }}
+                            </td>
+                            <td><a href="#"
+                                    class="btn btn-primary btn-sm">X</a></td>
+                        </tr>
+                        {% endwith %}
+                        {% endfor %}
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+    
+
+<script>
+
+function change(that) {
+            btn = that.closest("button")
+
+            if (btn.getAttribute('status') == "disable") {
+                btn.innerHTML = 'not set'
+                btn.setAttribute('status', 'not set')
+                btn.classList.remove("btn-danger");
+                btn.classList.add("btn-warning");
+            } else if (btn.getAttribute('status') == "not set") {
+                btn.innerHTML = 'enable'
+                btn.setAttribute('status', 'enable')
+                btn.classList.remove("btn-warning");
+                btn.classList.add("btn-success");
+            } else {
+                btn.innerHTML = 'disable'
+                btn.setAttribute('status', 'disable')
+
+                btn.classList.remove("btn-success");
+                btn.classList.add("btn-danger");
+            }
+            console.log(btn.getAttribute('status'))
+
+        }
+
+</script>
+
+
+
+{% endblock content %}
+
+
+
+
+
+
+

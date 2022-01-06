@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models.aggregates import Count
 
 from django.forms.models import modelformset_factory
+from django.http import request
 
 
 from django.shortcuts import get_object_or_404, redirect, render
@@ -131,6 +132,8 @@ class ShopDetail(DetailView):
         context = super(ShopDetail, self).get_context_data(**kwargs)
         context['product_count'] = self.object.product_set.all().count()
         context['product'] = Product.objects.filter(shop=self.object)
+        context['order'] = Cart.objects.filter(shop=self.object).order_by('-created_at')
+        context['order_count'] = Cart.objects.filter(shop=self.object).count()
         context['types'] = Type.objects.filter(shop__owner=self.request.user).distinct().annotate(count_shop=Count('shop'))
         context['category'] = Category.objects.filter(product__owner=self.request.user).distinct().annotate(count_product=Count('product'))
         return context
@@ -333,4 +336,31 @@ class ProductDetail(DetailView):
 
         context['types'] = Type.objects.filter(shop__owner=self.request.user).distinct().annotate(count_shop=Count('shop'))
         context['category'] = Category.objects.filter(product__owner=self.request.user).distinct().annotate(count_product=Count('product'))
+        return context
+
+
+@method_decorator(login_required, name='dispatch')
+class Editproduct(UpdateView):
+    model = Product
+    fields = ['name', 'description', 'price', 'quantity']
+    template_name = 'update_product.html'
+    success_url = reverse_lazy('dashboard-shop')
+
+
+@method_decorator(login_required, name='dispatch')
+class DeleteProdcut(DeleteView):
+    model = Product
+    template_name = 'delete_product.html'
+    success_url = reverse_lazy('dashboard-shop')
+
+
+class CartDetail(DetailView):
+    model = Cart
+    context_object_name = 'cart'
+    template_name = "cart-detail.html"
+
+
+    def get_context_data(self, **kwargs):
+        context = super(CartDetail, self).get_context_data(**kwargs)
+        context['items'] = CartItem.objects.filter(cart=self.object)
         return context

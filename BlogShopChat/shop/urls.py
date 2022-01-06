@@ -20,6 +20,11 @@ urlpatterns = [
     path('edit-category/<slug:slug>', EditCategory.as_view(), name='edit-category'),
     path('delete-type/<slug:slug>', DeleteType.as_view(), name='delete-type'),
     path('edit-type/<slug:slug>', EditType.as_view(), name='edit-type'),
+    path('edit-product/<slug:slug>', Editproduct.as_view(), name='edit-product'),
+    path('delete-product/<slug:slug>', DeleteProdcut.as_view(), name='delete-product'),
+    path('cart-detail/<int:pk>', CartDetail.as_view(), name='cart-detail'),
+
+
 
 
 

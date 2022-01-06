@@ -66,19 +66,26 @@
       <p class="list-group-item-text">شما میتوانید اسم کاربری و رمز عبور و ... خود را تغییر دهید</p>
   </a>
 
-{% if have_shop_pending == False %}
-  <a href="{% url 'new_post' %}" class="list-group-item">
-      <h4 class="list-group-item-heading">ایجاد فروشگاه جدید</h4>
-      <p class="list-group-item-text">
-          ازین قسمت میتوانیدفروشگاه جدیدی را ایجاد کنید
-      </p>
-  </a>
-{% endif %}
 
   <a href="{% url 'add-cat-tag' %}" class="list-group-item">
       <h4 class="list-group-item-heading">ایجاد دسته بندی و تگ</h4>
       <p class="list-group-item-text">شما میتوانید یک دسته بندی جدید یا تگی را ایجاد کنید</p>
   </a>
+
+</div>
+
+<div class="list-group">
+  <a href="#" class="list-group-item active">
+    
+  </a>
+  
+    <a href="{% url 'delete-product' slug=product.slug %}" class="list-group-item">
+      <span class="badge"></span> حذف محصول
+    </a>
+    <a href="{% url 'edit-product' slug=product.slug %}" class="list-group-item">
+      <span class="badge"></span> ویرایش محصول
+    </a>
+  
 </div>
 
 
