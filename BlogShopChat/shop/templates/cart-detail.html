@@ -17,14 +17,15 @@
 
 <div class="col-sm-12 col-md-12">
   <div class="thumbnail">
-          <p> {{ shop.description }} </p>
+          <p></p>
           <br>
           <ul class="list-group list-group-flush">
-            <li class="list-group-item"><p class="card-text"><small class="text-muted">وضعیت :<b>{{ cart.status_payment }}</small></p></li>
-            <li class="list-group-item"><p class="card-text"><small class="text-muted">اسم خریدار :<b>{{cart.customer.username}}</small></p></li>
-            <li class="list-group-item"><p class="card-text"><small class="text-muted">تغییر وضعیت :<b><button class="btn btn-success pull-left" onclick="change(this)" status="enable" id="status">
-                enable
+            <li class="list-group-item"><p class="card-text"><small class="text-muted">تغییر وضعیت :<b><button class="btn btn-{{color}} pull-left" value="{{ value }}" onclick="change(this)" status="{{ status }}" id="status">
+                {{ word }}
              </button></small></p></li>
+            <li class="list-group-item"><p class="card-text"><small class="text-muted">اسم خریدار :<b>{{cart.customer.username}}</small></p></li>
+
+            <li class="list-group-item"><p class="card-text"><small class="text-muted">قیمت پرداختی :<b>{{cart.paid_amount}}</small></p></li>
           
             </ul>
 
@@ -72,11 +73,13 @@
                             <td class="product-name">
                                 <h2 class="h5 text-black">{{ product.name }}</h2>
                             </td>
-                            <td>${{ item.price }}</td>
+                            <td> {{ item.price }} ریال</td>
                             <td> {{ item.quantity }}
                             </td>
-                            <td><a href="#"
-                                    class="btn btn-primary btn-sm">X</a></td>
+                            <td><form action="" method="POST">
+                                {% csrf_token %}
+                                <button type="submit" name="cart_id" value="{{ item.pk }}"
+                                    class="btn btn-primary btn-sm">X</button></form></td>
                         </tr>
                         {% endwith %}
                         {% endfor %}
@@ -85,36 +88,69 @@
                     </tbody>
                 </table>
             </div>
-    
 
+    </div>
+</div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>  
 <script>
+
 
 function change(that) {
             btn = that.closest("button")
-
-            if (btn.getAttribute('status') == "disable") {
-                btn.innerHTML = 'not set'
-                btn.setAttribute('status', 'not set')
-                btn.classList.remove("btn-danger");
-                btn.classList.add("btn-warning");
-            } else if (btn.getAttribute('status') == "not set") {
-                btn.innerHTML = 'enable'
-                btn.setAttribute('status', 'enable')
+            console.log(btn)
+            if (btn.getAttribute('status') == "Pending") {
+                btn.innerHTML = 'پرداخت شده'
+                btn.setAttribute('status', 'Paid')
+                btn.setAttribute('value', 'PID')
                 btn.classList.remove("btn-warning");
                 btn.classList.add("btn-success");
-            } else {
-                btn.innerHTML = 'disable'
-                btn.setAttribute('status', 'disable')
-
+            } else if (btn.getAttribute('status') == "Paid") {
+                btn.innerHTML = 'کنسل شده'
+                btn.setAttribute('status', 'Canceled')
+                btn.setAttribute('value', 'CNL')
                 btn.classList.remove("btn-success");
                 btn.classList.add("btn-danger");
+            } else if (btn.getAttribute('status') == "Canceled") {
+                btn.innerHTML = 'تاییده شده'
+                btn.setAttribute('status', 'Confirmed')
+                btn.setAttribute('value', 'CFD')
+                btn.classList.remove("btn-danger");
+                btn.classList.add("btn-primary");
+            } else {
+                btn.innerHTML = 'در حال پردازش'
+                btn.setAttribute('status', 'Pending')
+                btn.setAttribute('value', 'PND')
+                btn.classList.remove("btn-primary");
+                btn.classList.add("btn-warning");
             }
-            console.log(btn.getAttribute('status'))
+
+
 
         }
 
 </script>
+<script>
+    $("#status").click(function () {
+        console.log('-----', $(this).attr('value'))
+      var status = $(this).attr('value');
 
+      $.ajax({
+        url: '{% url "change-status" %}',
+        data: {
+          'status': status,
+          'cartid': '{{ cart.id }}'
+        },
+        dataType: 'json',
+        success: function (data) {
+          if (data.is_taken) {
+            alert("وضعیت سبد خرید تغییر کرد");
+          }
+        }
+      });
+
+    });
+  </script>
 
 
 {% endblock content %}

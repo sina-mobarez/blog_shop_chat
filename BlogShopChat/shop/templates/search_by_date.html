@@ -1,0 +1,89 @@
+{% extends "base_shop.html" %}
+
+
+{% block slider %}
+<div class="">
+  <center><h3>جستجو بر اساس بازه ی زمانی :</h3></center>
+  <hr>
+</div>
+
+
+{% endblock slider %}
+
+
+{% block content %}
+<div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+
+
+    <div class="col-md-12 text-center">
+
+        <form action="" method="post">
+
+            {% csrf_token %}
+            از : <input type="date" name="startdate"/>
+            تا : <input type="date" name="enddate"/>
+            <input type="submit" value="جستجو">
+
+
+        </form>
+
+    </div>
+  
+
+
+</div>
+
+<div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+
+    <div class="col-md 12">
+
+
+
+        <div class="site-blocks-table thumbnail">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th class="product-thumbnail">شماره ی سفارش</th>
+                        <th class="product-name">نام مشتری</th>
+                        <th class="product-price">تاریخ ثبت</th>
+                        <th class="product-remove">جزییات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>{% for item in cart %}
+                    <tr>
+                        <td class="product-name">
+                            <h2 class="h5 text-black">{{ item.order_number }}</h2>
+                        </td>
+                        <td> {{ item.customer.username }}</td>
+                        <td> {{ item.created_at }}
+                        </td>
+                        <td>
+                            <a type="button" href="{% url 'cart-detail' pk=item.pk %}" 
+                                class="btn btn-warning btn-sm">کلیک کنید</a></td>
+                    </tr>
+                    {% endfor %}
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+
+</div>
+
+</div>
+
+
+
+
+
+
+
+{% endblock content %}
+
+
+
+
+
+
+

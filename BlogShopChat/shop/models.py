@@ -131,7 +131,7 @@ class Product(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField(blank=True)
     description = models.TextField(blank=True, null=True)
-    price = models.DecimalField(max_digits=12, decimal_places=3)
+    price = models.PositiveIntegerField()
     quantity = models.IntegerField(default=1)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="owner of product", on_delete=models.CASCADE)
     shop = models.ForeignKey(Shop, verbose_name="shop of product", on_delete=models.CASCADE)
@@ -256,7 +256,7 @@ class CartItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
-    price = models.DecimalField(max_digits=12, decimal_places=3,blank=True)
+    price = models.PositiveIntegerField(blank=True)
 
     def save(self, *args, **kwargs):
         if not self.price:

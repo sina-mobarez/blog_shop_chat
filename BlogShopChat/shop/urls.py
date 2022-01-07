@@ -23,6 +23,11 @@ urlpatterns = [
     path('edit-product/<slug:slug>', Editproduct.as_view(), name='edit-product'),
     path('delete-product/<slug:slug>', DeleteProdcut.as_view(), name='delete-product'),
     path('cart-detail/<int:pk>', CartDetail.as_view(), name='cart-detail'),
+    path('search-by-date/<slug:slug>', SearchByDate.as_view(), name='search-by-date'),
+    path('change-status/', change_status, name='change-status')
+
+    
+
 
 
 

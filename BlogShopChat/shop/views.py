@@ -7,6 +7,7 @@ from django.db.models.aggregates import Count
 
 from django.forms.models import modelformset_factory
 from django.http import request
+from django.http.response import JsonResponse
 
 
 from django.shortcuts import get_object_or_404, redirect, render
@@ -14,7 +15,7 @@ from django.urls.base import reverse_lazy
 from django.utils.decorators import method_decorator
 
 from django.views.generic import ListView
-from django.views.generic.base import View
+from django.views.generic.base import TemplateView, View
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from .forms import *
@@ -50,7 +51,7 @@ class Dashboard(ListView):
 
 
 
-
+@method_decorator(login_required, name='dispatch')
 class CategoryDetail(DetailView):
 
     model = Category
@@ -66,7 +67,7 @@ class CategoryDetail(DetailView):
         return context
 
 
-
+@method_decorator(login_required, name='dispatch')
 class TypeDetail(DetailView):
 
     model = Type
@@ -124,7 +125,6 @@ class ShopDetail(DetailView):
     model = Shop
     context_object_name = 'shop'
     template_name = "shop_detail.html"
-    ImageFormSet = modelformset_factory(Picture,form=PictureForm, extra=4)
 
 
     def get_context_data(self, **kwargs):
@@ -136,7 +136,30 @@ class ShopDetail(DetailView):
         context['order_count'] = Cart.objects.filter(shop=self.object).count()
         context['types'] = Type.objects.filter(shop__owner=self.request.user).distinct().annotate(count_shop=Count('shop'))
         context['category'] = Category.objects.filter(product__owner=self.request.user).distinct().annotate(count_product=Count('product'))
+        context['word'] = 'لیست سبد خرید'
         return context
+
+
+    def post(self, request, *args, **kwargs):
+        status = request.POST['status']
+        if status == 'PID':
+            word = 'پرداخت شده'
+        elif status == 'CFD':
+            word = 'تاییده شده'
+        elif status == 'CNL':
+            word = 'کنسل شده'
+        else:
+            word = 'در حال پردازش'
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.object)
+        context['product_count'] = self.object.product_set.all().count()
+        context['product'] = Product.objects.filter(shop=self.object)
+        context['order'] = Cart.objects.filter(shop=self.object).filter(status_payment=status).order_by('-created_at')
+        context['order_count'] = Cart.objects.filter(shop=self.object).filter(status_payment=status).count()
+        context['types'] = Type.objects.filter(shop__owner=self.request.user).distinct().annotate(count_shop=Count('shop'))
+        context['category'] = Category.objects.filter(product__owner=self.request.user).distinct().annotate(count_product=Count('product'))
+        context['word'] = word
+        return self.render_to_response(context)
 
 
   
@@ -157,6 +180,7 @@ def shop_no_pending_required(function=None, redirect_field_name=REDIRECT_FIELD_N
     if function:
         return actual_decorator(function)
     return actual_decorator
+
 
 @method_decorator(shop_no_pending_required(redirect_url='dashboard-shop'), name='dispatch')
 class CreateShop(CreateView):
@@ -211,7 +235,7 @@ class DeleteShop(UpdateView):
 @method_decorator(login_required, name='dispatch')
 class UpdateShop(UpdateView):
     model = Shop
-    fields = ['name', 'type']
+    fields = ['name', 'type', 'description']
     template_name = 'update_shop.html'
     success_url = reverse_lazy('dashboard-shop')
 
@@ -225,30 +249,8 @@ class UpdateShop(UpdateView):
         return super().form_valid(form)
 
 
-# @login_required(login_url='login')
-# def add_category_type(request):
-#     category_form = CategoryForm()
-#     tag_form = TypeForm()
-#     category = Category.objects.all() 
-#     tag = Type.objects.all()
-#     if request.method == "POST":
-#         print(request.POST)
-#         if request.POST['forcefield'] == 'c':    
-#             category_form = CategoryForm(request.POST)
-#             if category_form.is_valid():
-#                 category_form.save()
-#                 return redirect('add-type-category')
-#         elif request.POST['forcefield'] == 't':
-#             tag_form = TypeForm(request.POST)
-#             if tag_form.is_valid():
-#                 tag_form.save()
-#                 return redirect('add-type-category')
-#     else:
-#         tag_form = TypeForm()
-#         category_form = CategoryForm()
-#     return render(request, 'add-type-category.html', {'tags': tag, 'category': category,'catform': category_form, 'tagform': tag_form})
 
-
+@method_decorator(login_required, name='dispatch')
 class AddTypeCategory(View):
     category_form = CategoryForm()
     type_form = TypeForm()
@@ -321,6 +323,8 @@ def add_product(request, slug):
                   {'postForm': postForm, 'formset': formset})
 
 
+
+@method_decorator(login_required, name='dispatch')
 class ProductDetail(DetailView):
     model = Product
     context_object_name = 'product'
@@ -354,6 +358,8 @@ class DeleteProdcut(DeleteView):
     success_url = reverse_lazy('dashboard-shop')
 
 
+
+@method_decorator(login_required, name='dispatch')
 class CartDetail(DetailView):
     model = Cart
     context_object_name = 'cart'
@@ -363,4 +369,73 @@ class CartDetail(DetailView):
     def get_context_data(self, **kwargs):
         context = super(CartDetail, self).get_context_data(**kwargs)
         context['items'] = CartItem.objects.filter(cart=self.object)
+        status = self.object.status_payment
+        if status == 'PID':
+            word = 'پرداخت شده'
+            color = 'success'
+            set = 'Paid'
+        elif status == 'CFD':
+            word = 'تاییده شده'
+            color = 'primary'
+            set = 'Confirmed'
+        elif status == 'CNL':
+            word = 'کنسل شده'
+            color = 'danger'
+            set = 'Canceled'
+        else:
+            word = 'در حال پردازش'
+            color = 'warning'
+            set = 'Pending'
+
+        context['word'] = word
+        context['color'] = color
+        context['status'] = set
+        context['value'] = status
+
         return context
+
+
+    def post(self, request, *args, **kwargs):
+        item_id = request.POST['cart_id']
+        item = CartItem.objects.get(pk=item_id)
+        item.delete()
+        cart = self.get_object()
+        cart.save()
+        messages.success(request,"آیتم مورد نظر از سبد خرید کاربر حذف شد")
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
+
+
+@method_decorator(login_required, name='dispatch')
+class SearchByDate(View):
+    def post(self, request, *args, **kwargs):
+        shop = kwargs['slug']
+        start = request.POST.get('startdate', None)
+        end = request.POST.get('enddate', None)
+        carts = Cart.objects.filter(shop__slug=shop).filter(created_at__date__range=(start, end))
+        return render(request, 'search_by_date.html', {'cart': carts})
+
+    def get(self, request, *args, **kwargs):
+        shop = kwargs['slug']
+        carts = Cart.objects.filter(shop__slug=shop)
+        return render(request, 'search_by_date.html', {'cart': carts})
+
+@login_required
+def change_status(request):
+    status = request.GET.get('status', None)
+    id = request.GET.get('cartid', None)
+    print('--------', status, id)
+    cartitem = Cart.objects.get(pk=id)
+    cartitem.status_payment = status
+    cartitem.save()
+    data = {
+        'is_taken': 'status is change'
+    }
+    return JsonResponse(data)
+
+
+
+class LandingPage(TemplateView):
+
+    template_name = "landing.html"

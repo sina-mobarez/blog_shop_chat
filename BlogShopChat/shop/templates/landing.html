@@ -1,0 +1,31 @@
+{% extends "base_form.html" %}
+
+
+
+{% block content %}
+
+<div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+    <h3>با سلام </h3>
+    <br>
+    <p>به سایت ما خوش امدید </p>
+    
+    <br>
+    
+    
+ 
+
+<div class="col-md-12"><a href="{% url 'post_list' %}"><button class="btn btn-primary "  >بلاگ</button></a></div>
+<br>
+<div class="col-md-12"><a href="{% url 'dashboard-shop' %}"><button class="btn btn-success "  >فروشگاه</button></a></div>
+
+</div>
+
+
+{% endblock content %}
+
+
+
+
+
+
+

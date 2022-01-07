@@ -18,7 +18,7 @@ from django.contrib.staticfiles.urls import static
 from django.urls import path, include
 from accounts.views import LoginView, RegisterView
 from . import settings
-
+from shop.views import LandingPage
 
 
 urlpatterns = [
@@ -29,5 +29,6 @@ urlpatterns = [
                   path('register/', RegisterView.as_view(), name='register'),
                   path('blog/', include('blog.urls')),
                   path('accounts/', include('django.contrib.auth.urls')),
+                  path('', LandingPage.as_view(), name='landing-page')
 
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

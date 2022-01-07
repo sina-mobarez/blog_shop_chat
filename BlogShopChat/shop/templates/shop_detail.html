@@ -193,10 +193,55 @@
     </a>
   
 </div>
+<hr style="color: black;">
+<div class="list-group">
+  <a href="{% url 'search-by-date' slug=shop.slug %}" class="list-group-item">
+    <h4 class="list-group-item-heading text-center">جستجو بر اساس بازه ی زمانی</h4>
+    <p class="list-group-item-text"></p>
+  </a>
+</div>
 
 <div class="list-group">
   <a href="#" class="list-group-item active">
-    لیست سبد خرید ({{ order_count }})
+    فیلتر براساس وضعیت 
+  </a>
+  
+    <a href="" class="list-group-item">
+      <span class="badge"></span><form action="" method="POST">
+        {% csrf_token %}
+        <button type="submit" name="status" value="PID"
+            class="btn btn-primary btn-sm">پرداخت شده</button></form>
+    </a>
+
+    <a href="" class="list-group-item">
+      <span class="badge"></span><form action="" method="POST">
+        {% csrf_token %}
+        <button type="submit" name="status" value="CFD"
+            class="btn btn-primary btn-sm">تایید شده</button></form>
+    </a>
+
+    <a href="" class="list-group-item">
+      <span class="badge"></span><form action="" method="POST">
+        {% csrf_token %}
+        <button type="submit" name="status" value="CNL"
+            class="btn btn-primary btn-sm">کنسل شده</button></form>
+    </a>
+
+    <a href="" class="list-group-item">
+      <span class="badge"></span><form action="" method="POST">
+        {% csrf_token %}
+        <button type="submit" name="status" value="PND"
+            class="btn btn-primary btn-sm">در حال پردازش</button></form>
+    </a>
+
+
+  
+</div>
+
+
+<div class="list-group">
+  <a href="#" class="list-group-item active">
+    {{ word }} ({{ order_count }})
   </a>
   {% for item in order %}
     <a href="{% url 'cart-detail' pk=item.pk %}" class="list-group-item">
