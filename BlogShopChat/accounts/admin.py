@@ -6,6 +6,7 @@ User = get_user_model()
 from .forms import CustomUserCreationForm
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from .models import Country, City
 # from .forms import UserAdminCreationForm, UserAdminChangeForm
 
 
@@ -37,5 +38,8 @@ class CustomUserAdmin(BaseUserAdmin):
 
 
 admin.site.register(User, CustomUserAdmin)
+admin.site.register(City)
+admin.site.register(Country)
+
 
 

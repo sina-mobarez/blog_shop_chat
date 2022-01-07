@@ -36,7 +36,7 @@ class ShopAdmin(admin.ModelAdmin):
 
     fieldsets =(
         (None, {
-            'fields': (('name', 'slug'), 'type', 'status', 'owner')
+            'fields': (('name', 'slug'), 'type', 'status', 'owner', 'description')
         }),
     )
 

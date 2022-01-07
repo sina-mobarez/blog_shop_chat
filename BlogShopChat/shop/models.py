@@ -5,6 +5,7 @@ import random
 from PIL import Image
 from django.conf import settings
 from django.template.defaultfilters import slugify
+from django.utils.crypto import get_random_string
 
 
 from django.core.files import File
@@ -36,7 +37,7 @@ def unique_order_number(instance, prefix):
     model = instance.__class__
     unique_number = prefix
     while model.objects.filter(order_number=prefix).exists():
-        unique_number = unique_number + str(random.randint(0, 12000))
+        unique_number = unique_number + get_random_string(length=4)
     return unique_number
 
 
@@ -225,7 +226,7 @@ class Cart(models.Model):
     CHOICES = [(Paid, 'paid'),(Canceled, 'canceled'),(Pending, 'pending'), (Confirmed, 'confirmed')]
     status_payment = models.CharField(max_length=3,choices= CHOICES, default=Pending)
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING)
-    order_number = models.CharField(max_length=23,blank=True)
+    order_number = models.CharField(max_length=23)
     shop = models.ForeignKey(Shop, verbose_name="shop of cart", on_delete=models.DO_NOTHING)
     created_at = models.DateTimeField(auto_now_add=True)
     paid_amount = models.DecimalField(max_digits=12, decimal_places=0, blank=True, null=True)
@@ -246,8 +247,6 @@ class Cart(models.Model):
                 quantity = item.quantity
                 final_price += price * quantity
             self.paid_amount = final_price
-        if not self.order_number:
-            self.order_number = unique_order_number(self, 1000 )
         super().save(*args, **kwargs)
 
 

@@ -50,10 +50,17 @@ class UserManager(BaseUserManager):
 class Country(models.Model):
     name = models.CharField(_("name of country"), max_length=50)
 
+    def __str__(self):
+        return self.name
+
 
 class City(models.Model):
     name = models.CharField(_("name of city"), max_length=50)
     country = models.ForeignKey(Country, verbose_name=_("country of city"), on_delete=models.CASCADE)
+
+
+    def __str__(self):
+        return self.name
 
 
 
