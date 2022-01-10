@@ -127,7 +127,7 @@ class UserChangeForm(UserChangeForm):
 
     class Meta:
         model = CustomUser
-        fields = ('username', 'first_name', 'last_name', 'is_active', 'address', 'city', 'is_seller', 'email', 'phone')
+        fields = ('username', 'first_name', 'last_name', 'is_active', 'email', 'phone')
         labels = {
 			'username': "نام کاربری",
 			'first_name': "نام",

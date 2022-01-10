@@ -55,6 +55,7 @@
 							{% if user.is_authenticated %}
                             <li><a href="{% url 'logout' %}">خارج شدن</a></li>
                             <li><a href="{% url 'dashboard' %}">داشبورد</a></li>
+                            <li><a href="{% url 'dashboard-shop' %}">فروشگاه</a></li>
 							{% else %}
                             <li><a href="{% url 'signup' %}">ثبت نام</a></li>
                             <li><a href="{% url 'login' %}">وارد شدن</a></li>

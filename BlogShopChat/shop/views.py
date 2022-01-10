@@ -2,12 +2,13 @@
 from django.contrib import messages
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.mail import send_mail
 
 from django.db.models.aggregates import Count
 
 from django.forms.models import modelformset_factory
 from django.http import request
-from django.http.response import JsonResponse
+from django.http.response import BadHeaderError, HttpResponse, JsonResponse
 
 
 from django.shortcuts import get_object_or_404, redirect, render
@@ -432,6 +433,14 @@ def change_status(request):
     data = {
         'is_taken': 'status is change'
     }
+    subject = f'تغییر در وضعیت سبد خرید { cartitem.shop }'
+    message = f'سبد خرید شماره ی  { cartitem.order_number} توسط فروشگاه دار به حالت {status} تغییر یافت . با تچکر '
+    sender = f'فروشگاه {cartitem.shop}'
+    recipients = [cartitem.owner.email]
+    try:
+        send_mail(subject, message, sender, recipients, fail_silently=True)
+    except BadHeaderError:
+        return HttpResponse('Invalid header found')
     return JsonResponse(data)
 
 

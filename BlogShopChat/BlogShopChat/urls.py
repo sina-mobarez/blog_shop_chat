@@ -24,6 +24,12 @@ from shop.views import LandingPage
 urlpatterns = [
                   path('grappelli/', include('grappelli.urls')),
                   path('shop/', include('shop.urls')),
+                  #path to djoser end points
+                  path('auth/', include('djoser.urls')),
+                  path('auth/', include('djoser.urls.jwt')),
+	
+	              #path to our account's app endpoints
+                  path("webservice/api/",include("webservice.urls")),
                   path('admin/', admin.site.urls),
                   path('login/', LoginView.as_view(), name='login'),
                   path('register/', RegisterView.as_view(), name='register'),

@@ -70,9 +70,7 @@ class CustomUser(AbstractUser):
     phone = models.CharField('Phone number',validators =[phone_regex], max_length=14, unique=True,null=True)
     email = models.EmailField(_('email address'), unique=True)
     REQUIRED_FIELDS = ['email', 'phone']
-    is_seller = models.BooleanField(default=False)
-    city = models.ForeignKey(City, verbose_name=_("where user is live"), on_delete=models.CASCADE, null=True, blank=True)
-    address = models.CharField(max_length = 900, blank = True, null = True)
+
 
 
     objects = UserManager()  
@@ -81,3 +79,15 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return f'{self.phone} / {self.username}'     
 
+class Profile(models.Model):
+    user = models.OneToOneField(CustomUser,on_delete=models.CASCADE,related_name="profile")
+    description = models.TextField(blank=True,null=True)
+    address = models.CharField(max_length=30,blank=True)
+    date_joined = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True)
+    is_seller = models.BooleanField(default=False)
+    city = models.ForeignKey(City, verbose_name=_("where user is live"), on_delete=models.CASCADE, null=True, blank=True)
+    
+
+    def __str__(self):
+        return self.user.username

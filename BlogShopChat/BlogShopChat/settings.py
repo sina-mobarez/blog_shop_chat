@@ -41,6 +41,15 @@ INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'blog',
     'shop',
+    'webservice',
+    #third party package for user registration and authentication endpoints 	
+    'djoser',
+	
+    #rest API implementation library for django
+    'rest_framework',
+	
+	#JWT authentication backend library
+    'rest_framework_simplejwt',
     'crispy_forms',
     'widget_tweaks',
     'django_extensions'
@@ -112,6 +121,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+}
+ALLOWED_HOSTS=['*']
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
@@ -171,3 +187,18 @@ GRAPPELLI_CLEAN_INPUT_TYPES = True
 AUTH_USER_MODEL = 'accounts.CustomUser'
 AUTHENTICATION_BACKENDS = ['accounts.backends.EmailBackend']
 
+
+
+'''
+
+Endpoint	                     Description
+--------------------------------------------------------------------------------------------------------------
+/auth/users/	                 Register a new user
+/auth/users/me/	                 retrieve/update the currently logged in user
+/auth/jwt/create/	             create a JWT by passing a valid user in the post request to this endpoint
+/auth/jwt/refresh/	             get a new JWT once the lifetime of the previously generated one expires
+/api/accounts/all-profiles/	     get all user profiles and create a new one
+/api/accounts/profile/id/	     detail view of a user's profile
+
+
+'''

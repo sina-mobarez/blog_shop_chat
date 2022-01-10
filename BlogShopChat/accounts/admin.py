@@ -6,7 +6,7 @@ User = get_user_model()
 from .forms import CustomUserCreationForm
 from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import Country, City
+from .models import Country, City, Profile
 # from .forms import UserAdminCreationForm, UserAdminChangeForm
 
 
@@ -16,10 +16,10 @@ class CustomUserAdmin(BaseUserAdmin):
     add_form = CustomUserCreationForm
     # form = CustomUserChangeForm
     model = User
-    list_display = ('username','email','phone', 'is_staff', 'is_active','address', 'is_seller')
+    list_display = ('username','email','phone', 'is_staff', 'is_active',)
     list_filter = ('username','email','phone','is_staff', 'is_active',)
     fieldsets = (
-        (None, {'fields': ('email', 'password', 'address', 'is_seller'),}),
+        (None, {'fields': ('email', 'password',),}),
         ('Permissions', {'fields': ('is_staff', 'is_active')}),
     )
     add_fieldsets = (
@@ -40,6 +40,8 @@ class CustomUserAdmin(BaseUserAdmin):
 admin.site.register(User, CustomUserAdmin)
 admin.site.register(City)
 admin.site.register(Country)
+admin.site.register(Profile)
+
 
 
 
