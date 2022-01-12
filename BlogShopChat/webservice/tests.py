@@ -11,7 +11,7 @@ class UserProfileTestCase(APITestCase):
         self.user = self.client.post('/auth/users/',data={'username':'mario','password':'i-keep-jumping'})
         # obtain a json web token for the newly created user
         response = self.client.post('/auth/jwt/create/',data={'username':'mario','password':'i-keep-jumping'})
-        self.token=response.data['access']
+        self.token = response.data['access']
         self.api_authentication()
 
     def api_authentication(self):

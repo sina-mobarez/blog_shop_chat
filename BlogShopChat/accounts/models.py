@@ -80,10 +80,19 @@ class CustomUser(AbstractUser):
         return f'{self.phone} / {self.username}'     
 
 class Profile(models.Model):
+    Male= 'male'
+    Female= 'fmle'
+    STATUS= [
+        (Male, 'male'),
+        (Female, 'female'),
+    ]
     user = models.OneToOneField(CustomUser,on_delete=models.CASCADE,related_name="profile")
     description = models.TextField(blank=True,null=True)
     address = models.CharField(max_length=30,blank=True)
     date_joined = models.DateTimeField(auto_now_add=True)
+    age = models.PositiveIntegerField()
+    sexuality = models.CharField("select your gender", max_length=4, choices=STATUS)
+    image = models.ImageField("image of profile user",upload_to='uploads/profile', height_field=None, width_field=None, max_length=None, null=True, blank=True)
     updated_on = models.DateTimeField(auto_now=True)
     is_seller = models.BooleanField(default=False)
     city = models.ForeignKey(City, verbose_name=_("where user is live"), on_delete=models.CASCADE, null=True, blank=True)

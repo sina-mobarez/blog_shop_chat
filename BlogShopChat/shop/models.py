@@ -134,6 +134,7 @@ class Product(models.Model):
     description = models.TextField(blank=True, null=True)
     price = models.PositiveIntegerField()
     quantity = models.IntegerField(default=1)
+    available = models.BooleanField(default=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name="owner of product", on_delete=models.CASCADE)
     shop = models.ForeignKey(Shop, verbose_name="shop of product", on_delete=models.CASCADE)
     date_added = models.DateTimeField(auto_now_add=True)
@@ -226,7 +227,8 @@ class Cart(models.Model):
     CHOICES = [(Paid, 'paid'),(Canceled, 'canceled'),(Pending, 'pending'), (Confirmed, 'confirmed')]
     status_payment = models.CharField(max_length=3,choices= CHOICES, default=Pending)
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING)
-    order_number = models.CharField(max_length=23)
+    products = models.ManyToManyField('shop.product', verbose_name='product of this basket', through='shop.CartItem')
+    order_number = models.CharField(max_length=23, null=True, blank=True, unique=True)
     shop = models.ForeignKey(Shop, verbose_name="shop of cart", on_delete=models.DO_NOTHING)
     created_at = models.DateTimeField(auto_now_add=True)
     paid_amount = models.DecimalField(max_digits=12, decimal_places=0, blank=True, null=True)
@@ -239,14 +241,15 @@ class Cart(models.Model):
         return f'{self.customer}/{self.status_payment}/{self.order_number}'
 
     def save(self, *args, **kwargs):
-        if not self.paid_amount:
-            final_price = 0
-            items = self.cartitem_set.all()
-            for item in items:
-                price = item.price
-                quantity = item.quantity
-                final_price += price * quantity
-            self.paid_amount = final_price
+        final_price = 0
+        items = self.cartitem_set.all()
+        for item in items:
+            price = item.price
+            quantity = item.quantity
+            final_price += price * quantity
+        self.paid_amount = final_price
+        if not self.order_number:
+            self.order_number = str(get_random_string(length=2)) + str(randint(1000, 9999))
         super().save(*args, **kwargs)
 
 
