@@ -15,4 +15,9 @@ urlpatterns = [
     path('confirmed-shop/', ConfirmedShopList.as_view(), name='confirmed-shop'),
     path('type/', TypeList.as_view(), name='type'),
     path('product', ProductList.as_view(), name='product'),
+    path('cart/product', AddItemToCart.as_view(), name='add-item-to-cart'),
+    path('cart/open', RetrieveCart.as_view(), name='cart-open'),
+    path('cart/<int:pk>', Paymentcart.as_view(), name='cart-payment'),
+
+
 ]

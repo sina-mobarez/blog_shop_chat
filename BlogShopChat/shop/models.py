@@ -227,7 +227,7 @@ class Cart(models.Model):
     CHOICES = [(Paid, 'paid'),(Canceled, 'canceled'),(Pending, 'pending'), (Confirmed, 'confirmed')]
     status_payment = models.CharField(max_length=3,choices= CHOICES, default=Pending)
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING)
-    products = models.ManyToManyField('shop.product', verbose_name='product of this basket', through='shop.CartItem')
+    products = models.ManyToManyField(Product, verbose_name='product of this basket', through='CartItem')
     order_number = models.CharField(max_length=23, null=True, blank=True, unique=True)
     shop = models.ForeignKey(Shop, verbose_name="shop of cart", on_delete=models.DO_NOTHING)
     created_at = models.DateTimeField(auto_now_add=True)

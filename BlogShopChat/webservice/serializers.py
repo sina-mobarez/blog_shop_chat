@@ -64,9 +64,21 @@ class CartItemSerializer(serializers.ModelSerializer):
         model = CartItem
         fields = ['product', 'quantity']
 
-
-class CartSerializer(serializers.ModelSerializer):
+class ShopSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model =  Cart
+        model = Shop
         fields = '__all__'
+
+
+class CartSerializer(serializers.ModelSerializer):
+    customer = UserModelSerializer(read_only=True)
+    shop = ShopSerializer(read_only=True)
+    products = ProductSerializer(many=True, read_only=True)
+    class Meta:
+        model =  Cart
+        fields = ['id', 'status_payment', 'customer', 'products', 'order_number', 'shop', 'created_at', 'paid_amount', ]
+        
+
+class PaymentCartSerializer(serializers.Serializer):
+    cart_id = serializers.IntegerField()
