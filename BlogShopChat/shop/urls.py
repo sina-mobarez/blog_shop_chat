@@ -8,6 +8,7 @@ from .views import *
 urlpatterns = [
     path('dashboard/', Dashboard.as_view(), name="dashboard-shop"),
     path('dashboard/<slug:slug>', ShopDetail.as_view(), name="shop-detail"),
+    path('report/<slug:slug>', ReportSale.as_view(), name="shop-report"),
     path('create-shop/', CreateShop.as_view(), name="create-shop"),
     path('delete-shop/<slug:slug>', DeleteShop.as_view(), name='delete-shop'),
     path('update-shop/<slug:slug>', UpdateShop.as_view(), name='update-shop'),

@@ -1,4 +1,5 @@
 
+from inspect import CO_ITERABLE_COROUTINE
 from django.contrib import messages
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -19,6 +20,9 @@ from django.views.generic import ListView
 from django.views.generic.base import TemplateView, View
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from rest_framework import status
+
+from accounts.models import CustomUser
 from .forms import *
 
 
@@ -448,3 +452,62 @@ def change_status(request):
 class LandingPage(TemplateView):
 
     template_name = "landing.html"
+
+
+class ReportSale(ListView):
+    template_name = "report.html"
+    context_object_name = 'report'
+    
+    
+    def get_queryset(self):
+        shop = Shop.objects.get(slug=self.kwargs['slug'])
+        user_list = []
+        user_list2 = []
+        
+        for item in shop.cart_set.all().filter(status_payment='PID').distinct():
+            user_list.append(item)
+
+
+        for item in shop.cart_set.all().filter(status_payment='PID').distinct():
+            user_list2.append(item.customer)
+
+        count_list = []
+        for user in user_list2:
+            count = Cart.objects.filter(customer=user, shop=shop, status_payment='PID').count()
+            count_list.append(count)
+
+        list_data = zip(user_list, count_list)
+        print('============', list_data)
+        return list_data
+
+    def get_context_data(self, **kwargs):
+        context = super(ReportSale, self).get_context_data(**kwargs)
+        shop = Shop.objects.get(slug=self.kwargs['slug'])
+        user_list = []
+        for item in shop.cart_set.all().filter(status_payment='PID'):
+            user_list.append(item.customer)
+        count_list = []
+        for user in user_list:
+            count = Cart.objects.filter(customer=user, shop=shop, status_payment='PID').count()
+            count_list.append(count)
+
+        context['count_pay'] = count_list
+        prods = []
+        for product in shop.product_set.all():
+            prods.append(product.name)
+        context['prods'] = prods
+        
+        carts = []
+        cart_items = []
+        for item in shop.cart_set.all().filter(status_payment='PID').distinct():
+            carts.append(item)
+        for cart in carts:
+            cart_items.append(cart.cartitem_set.all())
+        print('cart======================',cart_items)
+        product_count = []
+        for cartitem in cart_items:
+            product_count.append(cartitem.count())
+        print('======================',product_count)
+
+        context['product_count'] = product_count
+        return context

@@ -55,7 +55,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['name', 'slug', 'description','category', 'price', 'quantity', 'owner', 'shop', 'date_added']
+        fields = ['id', 'name', 'slug', 'description','category', 'price', 'quantity', 'owner', 'shop', 'date_added']
 
 
 class CartItemSerializer(serializers.ModelSerializer):
@@ -82,3 +82,10 @@ class CartSerializer(serializers.ModelSerializer):
 
 class PaymentCartSerializer(serializers.Serializer):
     cart_id = serializers.IntegerField()
+
+
+
+class AddProductToCartSerializer(serializers.Serializer):
+    product_id = serializers.IntegerField()
+    cart_id = serializers.IntegerField()
+    quantity = serializers.IntegerField()

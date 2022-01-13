@@ -1,0 +1,113 @@
+{% extends "base_shop.html" %}
+
+
+{% block slider %}
+<div class="">
+  <h3>گزارش فروش {{ cart.order_number }}</h3>
+  <hr>
+</div>
+
+
+{% endblock slider %}
+
+
+{% block content %}
+<div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+
+
+<div class="col-sm-12 col-md-12">
+  <div class="thumbnail">
+    <canvas id="myChart" width="400" height="400"></canvas>
+  </div>
+</div>
+
+  
+
+
+
+
+<div class="row" style="margin-top: 10px; margin-bottom: 10px;">
+
+    <div class="col-md 12">
+
+
+
+            <div class="site-blocks-table thumbnail">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="product-thumbnail">نام مشتری</th>
+                            <th class="product-name">تاریخ اخرین خرید</th>
+                            <th class="product-price">تعداد خرید انجام شده</th>
+                            <th class="product-quantity">مبلغ خریداری شده</th>
+                            <th class="product-remove">تعداد کالای خریداری شده</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>{% for item, data in report %}
+                            
+                        <tr>
+                            <td class="product-thumbnail">
+                                {{ item.customer.username }}
+                            </td>
+                            <td class="product-name">
+                                <h2 class="h5 text-black">{{ item.paid_date }}</h2>
+                            </td>
+                            <td> {{ data }} </td>
+                            <td> {{ item.paid_amount }} ریال 
+                            </td>
+                            <td>{{ item.cartitem_set.count }}</td>
+                        </tr>
+                        
+                        {% endfor %}
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+    </div>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const labels = [
+        {% for item in prods %}
+        
+        '{{ item }}',
+
+        {% endfor %}
+    ];
+  
+    const data = {
+      labels: labels,
+      datasets: [{
+        label: 'نمودار تعدا فروش هر محصول',
+        backgroundColor: 'rgb(255, 99, 132)',
+        borderColor: 'rgb(255, 99, 132)',
+        data: {{ product_count }},
+      }]
+    };
+  
+    const config = {
+      type: 'line',
+      data: data,
+      options: {}
+    };
+  </script>
+  <script>
+    const myChart = new Chart(
+      document.getElementById('myChart'),
+      config
+    );
+  </script>
+
+
+{% endblock content %}
+
+
+
+
+
+
+

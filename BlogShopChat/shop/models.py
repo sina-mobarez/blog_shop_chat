@@ -1,3 +1,4 @@
+from datetime import datetime
 from io import BytesIO
 from os import name
 from random import choice, randint
@@ -250,6 +251,8 @@ class Cart(models.Model):
         self.paid_amount = final_price
         if not self.order_number:
             self.order_number = str(get_random_string(length=2)) + str(randint(1000, 9999))
+        if self.status_payment == 'PID':
+            self.paid_date = datetime.now()
         super().save(*args, **kwargs)
 
 

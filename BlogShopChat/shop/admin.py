@@ -52,7 +52,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 class CartAdmin(admin.ModelAdmin):
-    list_display = ('customer', 'order_number', 'created_at', 'shop', 'status_payment', 'paid_amount', 'paid_date')
+    list_display = ('pk', 'customer', 'order_number', 'created_at', 'shop', 'status_payment', 'paid_amount', 'paid_date')
     list_filter = ('status_payment',)
     search_fields = ('order_number',)
     date_hierarchy = ('created_at')

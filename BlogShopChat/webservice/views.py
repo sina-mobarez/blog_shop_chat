@@ -4,7 +4,7 @@ from django.db.models.query import QuerySet
 from django.http import request
 from django.http.response import HttpResponse
 from django.views import generic
-from rest_framework import generics, mixins, viewsets, status
+from rest_framework import generics, mixins, serializers, viewsets, status
 from django.shortcuts import render, get_object_or_404
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
@@ -14,10 +14,11 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.generics import (ListCreateAPIView,RetrieveUpdateDestroyAPIView,)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from accounts.models import Profile
 from shop.models import Cart, CartItem, Product, Shop, Type
 from .permissions import IsOwnerProfileOrReadOnly
-from .serializers import CartItemSerializer, CartSerializer, ConfirmedShop, PaymentCartSerializer, TypeSerializer, UserProfileSerializer, ProductSerializer
+from .serializers import AddProductToCartSerializer, CartItemSerializer, CartSerializer, ConfirmedShop, PaymentCartSerializer, TypeSerializer, UserProfileSerializer, ProductSerializer
 from .filters import ShopListFilter, ProductListFilter
 
 # Create your views here.
@@ -228,49 +229,44 @@ class UpdateCart:
 
 
 
-class RetrieveCart(mixins.RetrieveModelMixin, generics.GenericAPIView):
-    queryset = Cart.objects.all()
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
-    permission_classes = (IsAuthenticated,)
+class ListCartOpen(mixins.ListModelMixin, generics.GenericAPIView):
     serializer_class = CartSerializer
+    queryset = Cart.objects.filter(status_payment='PND').all()
+
+    def list(self, request, *args, **kwargs):
+        queryset = Cart.objects.filter(status_payment='PND', customer=request.user).all()
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+        
 
     def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
+        return self.list(request, *args, **kwargs)
 
 
-    def retrieve(self, request, *args, **kwargs):
-        instance = self.get_object(request)
-        serializer = self.get_serializer(instance)
+class ListCartPrevious(mixins.ListModelMixin, generics.GenericAPIView):
+    serializer_class = CartSerializer
+    queryset = Cart.objects.filter(status_payment='PID').all()
+
+    def list(self, request, *args, **kwargs):
+        queryset = Cart.objects.filter(status_payment='PID', customer=request.user).all()
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+        
 
-
-
-
-
-
-
-    def get_object(self, request):
-        """
-        Returns the object the view is displaying.
-
-        You may want to override this if you need to provide non-standard
-        queryset lookups.  Eg if objects are referenced using multiple
-        keyword arguments in the url conf.
-        """
-        queryset = self.filter_queryset(self.get_queryset())
-
-        # Perform the lookup filtering.
-
-
-
-
-        obj = get_object_or_404(queryset, customer=request.user)
-
-        # May raise a permission denied
-        self.check_object_permissions(self.request, obj)
-
-        return obj
-
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
 
 
 class Paymentcart(generics.RetrieveUpdateDestroyAPIView):
@@ -287,13 +283,27 @@ class Paymentcart(generics.RetrieveUpdateDestroyAPIView):
     def get(self, request, *args, **kwargs):
         if self.get_object().customer == request.user:
             return self.retrieve(request, *args, **kwargs)
-        return HttpResponse("hey bro, you can not see this cart becuz not your's ")
+        return Response(
+            {
+                'message': 'you can not see this cart, becaz not yours',
+                
+            },
+            status= status.HTTP_403_FORBIDDEN
+
+        )
         
 
     def put(self, request, *args, **kwargs):
         if self.get_object().customer == request.user:
             return self.update(request, *args, **kwargs)
-        return HttpResponse("hey bro, you can not see this cart becuz not your's ")
+        return Response(
+            {
+                'message': 'you can not paid this cart, becaz not yours',
+                
+            },
+            status= status.HTTP_403_FORBIDDEN
+
+        )
     
 
     def update(self, request, *args, **kwargs):
@@ -323,7 +333,8 @@ class Paymentcart(generics.RetrieveUpdateDestroyAPIView):
                 'message': 'payment is success, your cart already paid',
                 
             },
-            status= status.HTTP_200_OK
+            status= status.HTTP_403_FORBIDDEN
+
         )
 
 
@@ -331,6 +342,92 @@ class Paymentcart(generics.RetrieveUpdateDestroyAPIView):
     def delete(self, request, *args, **kwargs):
         if self.get_object().customer == request.user:
             return self.destroy(request, *args, **kwargs)
-        return HttpResponse("hey bro, you can not see this cart becuz not your's ")
+        return Response(
+            {
+                'message': 'you can not delete this cart, becaz not yours',
+                
+            },
+            status= status.HTTP_403_FORBIDDEN
+        )
 
+
+class AddRemoveProductFromCart(APIView):
+
+    def post(self, request, *args, **kwargs):
+        serializer = AddProductToCartSerializer(request.data)
+        serializer.is_valid(raise_exception=True)
+        cart_id = serializers.validated_data['cart_id']
+        product_id = serializers.validated_data['product_id']
+        quantity = serializers.validated_data['quantity']
+        cart = get_object_or_404(Cart, pk=cart_id)
+        product = get_object_or_404(Product, pk=product_id)
+        item = get_object_or_404(CartItem, product=product, cart=cart)
+        if item in cart.cartitem_set.all():
+            return Response(
+            {
+                'message': 'this product already exists in your cart',
+                'offered': 'you can change quantity of this product'
+            },
+            status= status.HTTP_403_FORBIDDEN
+        )
+        else:
+            CartItem.objects.create(cart=cart, product=product, quantity=quantity)
+        cart = get_object_or_404(Cart, pk=cart_id)
+        success = CartSerializer(cart)
+        return Response(data=success.data, status=200)
+
+
+
+class RemoveProductFromCart(mixins.RetrieveModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView):
+    lookup_field = 'pk'
+    lookup_url_kwarg = 'cart_id'
+    def get_queryset(self):
+        return Cart.objects.all()
+       
+
+    def get_serializer_class(self):
+        return CartSerializer
+
+    def get(self, request, *args, **kwargs):
+        if self.get_object().customer == request.user:
+            return self.retrieve(request, *args, **kwargs)
+        return Response(
+            {
+                'message': 'you can not see this cart, becaz not yours',
+                
+            },
+            status= status.HTTP_403_FORBIDDEN
+
+        )
+        
+
+
+
+    def delete(self, request, *args, **kwargs):
+        if self.get_object().customer == request.user:
+            return self.destroy(request, *args, **kwargs)
+        return Response(
+            {
+                'message': 'you can not delete this cart, becaz not yours',
+                
+            },
+            status= status.HTTP_403_FORBIDDEN
+        )
+
+    def destroy(self, request, *args, **kwargs):
+        cart = get_object_or_404(Cart, pk=kwargs['cart_id'])
+        product = get_object_or_404(Product, pk=kwargs['product_id'])
+        cart_item = get_object_or_404(CartItem, product=product, cart=cart)
+        if cart_item in cart.cartitem_set.all():
+            cart_item.delete()
+        cart_now = get_object_or_404(Cart, pk=kwargs['cart_id'])
+        if len(cart_now.cartitem_set.all()) < 1:
+            cart_now.delete()   
+        return Response(
+            {
+                'message': 'product remove from your cart',
+                
+            },
+            status= status.HTTP_200_OK
+        )
 
