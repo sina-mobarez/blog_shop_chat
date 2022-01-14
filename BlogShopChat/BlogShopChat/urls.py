@@ -21,7 +21,7 @@ from drf_yasg import openapi
 from django.contrib import admin
 from django.contrib.staticfiles.urls import static
 from django.urls import path, include
-from accounts.views import LoginView, RegisterView
+from accounts.views import LoginView, RegisterUser, RegisterView, login_user
 from . import settings
 from shop.views import LandingPage
 
@@ -50,11 +50,14 @@ urlpatterns = [
                   path('auth/', include('djoser.urls.jwt')),
 	
 	              #path to our account's app endpoints
-                  path("webservice/api/",include("webservice.urls")),
+                  path("api/v1/",include("webservice.urls")),
                   path('admin/', admin.site.urls),
                   path('login/', LoginView.as_view(), name='login'),
                   path('register/', RegisterView.as_view(), name='register'),
                   path('blog/', include('blog.urls')),
+                  path('api/register', RegisterUser.as_view(), name='api-register'),
+                  path('api/login', login_user),
+
                   path('accounts/', include('django.contrib.auth.urls')),
                   path('', LandingPage.as_view(), name='landing-page'),
                   # swagger 

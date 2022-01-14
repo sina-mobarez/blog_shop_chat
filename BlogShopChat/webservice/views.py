@@ -70,7 +70,7 @@ class UserProfileRetrieveUpdateDelete(mixins.RetrieveModelMixin, mixins.UpdateMo
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object(request)
-        file = request.data['file']
+        file = request.data['image']
         instance.image = file
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
@@ -269,7 +269,7 @@ class ListCartPrevious(mixins.ListModelMixin, generics.GenericAPIView):
         return self.list(request, *args, **kwargs)
 
 
-class Paymentcart(generics.RetrieveUpdateDestroyAPIView):
+class Paymentcart(mixins.UpdateModelMixin,mixins.RetrieveModelMixin, generics.GenericAPIView):
     lookup_field = 'pk'
     lookup_url_kwarg = 'pk'
 
@@ -351,7 +351,7 @@ class Paymentcart(generics.RetrieveUpdateDestroyAPIView):
         )
 
 
-class AddRemoveProductFromCart(APIView):
+class AddProductToCart(APIView):
 
     def post(self, request, *args, **kwargs):
         serializer = AddProductToCartSerializer(request.data)
