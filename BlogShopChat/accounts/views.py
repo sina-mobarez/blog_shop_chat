@@ -17,6 +17,8 @@ from django.db import IntegrityError
 from .forms import LoginForm, CustomUserCreationForm
 import json
 from django.contrib.auth.hashers import check_password
+from rest_framework import status
+from webservice.serializers import UserModelSerializer
 
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -120,10 +122,15 @@ class RegisterView(generic.CreateView):
 #     except KeyError as e:
 #         print(e)
 #         raise ValidationError({"400": f'Field {str(e)} missing'})
-
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 class RegisterUser(APIView):
     permission_classes = [AllowAny]
+    serializer_class = UserModelSerializer
 
+    # token_param_config = openapi.Parameter('data', openapi.IN_QUERY)
+
+    @swagger_auto_schema()
     def post(self, request, *args, **kwargs):
         
         try:
@@ -139,9 +146,16 @@ class RegisterUser(APIView):
 
             else:
                 data = serializer.errors
+                return Response(
+                    {
+                        'message': data,
+                        
+                    },
+                    status= status.HTTP_400_BAD_REQUEST
+                )
 
 
-            return Response(data)
+            return Response(data, status=status.HTTP_201_CREATED)
         except IntegrityError as e:
             account=CustomUser.objects.get(username='')
             account.delete()
@@ -189,3 +203,5 @@ def login_user(request):
 
         else:
             raise ValidationError({"400": f'Account doesnt exist'})
+
+

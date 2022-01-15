@@ -25,7 +25,15 @@ urlpatterns = [
     path('delete-product/<slug:slug>', DeleteProdcut.as_view(), name='delete-product'),
     path('cart-detail/<int:pk>', CartDetail.as_view(), name='cart-detail'),
     path('search-by-date/<slug:slug>', SearchByDate.as_view(), name='search-by-date'),
-    path('change-status/', change_status, name='change-status')
+    path('change-status/', change_status, name='change-status'),
+
+    #-------------charts -------------------
+    # path('statistics/', statistics_view, name='shop-statistics'),
+    # path('chart/filter-options/', get_filter_options, name='chart-filter-options'),
+    # path('chart/sales/<int:year>/', get_sales_chart, name='chart-sales'),
+    # path('chart/spend-per-customer/<int:year>/', spend_per_customer_chart, name='chart-spend-per-customer'),
+    # path('chart/payment-success/<int:year>/', payment_success_chart, name='chart-payment-success'),
+    # path('chart/payment-method/<int:year>/', payment_method_chart, name='chart-payment-method'),
 
     
 

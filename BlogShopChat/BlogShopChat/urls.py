@@ -55,8 +55,8 @@ urlpatterns = [
                   path('login/', LoginView.as_view(), name='login'),
                   path('register/', RegisterView.as_view(), name='register'),
                   path('blog/', include('blog.urls')),
-                  path('api/register', RegisterUser.as_view(), name='api-register'),
-                  path('api/login', login_user),
+                #   path('api/register', RegisterUser.as_view(), name='api-register'),
+                #   path('api/login', login_user, name='api-login'),
 
                   path('accounts/', include('django.contrib.auth.urls')),
                   path('', LandingPage.as_view(), name='landing-page'),

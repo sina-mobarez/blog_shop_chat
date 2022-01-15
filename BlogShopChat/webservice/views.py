@@ -20,6 +20,7 @@ from shop.models import Cart, CartItem, Product, Shop, Type
 from .permissions import IsOwnerProfileOrReadOnly
 from .serializers import AddProductToCartSerializer, CartItemSerializer, CartSerializer, ConfirmedShop, PaymentCartSerializer, TypeSerializer, UserProfileSerializer, ProductSerializer
 from .filters import ShopListFilter, ProductListFilter
+from rest_framework.parsers import FormParser, MultiPartParser
 
 # Create your views here.
 
@@ -50,10 +51,10 @@ class UserProfileListCreateView(ListCreateAPIView):
 
 class UserProfileRetrieveUpdateDelete(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, generics.GenericAPIView):
     queryset = Profile.objects.all()
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = (IsAuthenticated,)
     serializer_class = UserProfileSerializer
     lookup_field = 'slug'
+    parser_classes = (FormParser, MultiPartParser)
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
@@ -70,8 +71,8 @@ class UserProfileRetrieveUpdateDelete(mixins.RetrieveModelMixin, mixins.UpdateMo
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object(request)
-        file = request.data['image']
-        instance.image = file
+        # file = request.data['image']
+        # instance.image = file
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
@@ -111,6 +112,7 @@ class UserProfileRetrieveUpdateDelete(mixins.RetrieveModelMixin, mixins.UpdateMo
 
 class ConfirmedShopList(mixins.ListModelMixin, generics.GenericAPIView):
     queryset = Shop.confirmed.all()
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = (IsAuthenticated,)
     filterset_class = ShopListFilter
 
@@ -126,20 +128,23 @@ class ConfirmedShopList(mixins.ListModelMixin, generics.GenericAPIView):
 
 class TypeList(mixins.ListModelMixin, generics.GenericAPIView):
     queryset = Type.objects.all()
-    
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = (IsAuthenticated,)
+    serializer_class = TypeSerializer
+
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
 
 
-    def get_serializer_class(self):
-        if self.request.method == 'GET':
-            return TypeSerializer
+
 
 
 
 class ProductList(mixins.ListModelMixin, generics.GenericAPIView):
     queryset = Product.objects.filter(quantity__gt=1)
     filterset_class = ProductListFilter
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
@@ -153,6 +158,8 @@ class ProductList(mixins.ListModelMixin, generics.GenericAPIView):
 
 class AddItemToCart(mixins.CreateModelMixin, mixins.ListModelMixin, generics.GenericAPIView):
     queryset = Cart.objects.filter(status_payment='PND').all()
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
 
     def list(self, request, *args, **kwargs):
         queryset = Cart.objects.filter(status_payment='PND', customer=request.user).all()
@@ -231,7 +238,9 @@ class UpdateCart:
 
 class ListCartOpen(mixins.ListModelMixin, generics.GenericAPIView):
     serializer_class = CartSerializer
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     queryset = Cart.objects.filter(status_payment='PND').all()
+    permission_classes = (IsAuthenticated,)
 
     def list(self, request, *args, **kwargs):
         queryset = Cart.objects.filter(status_payment='PND', customer=request.user).all()
@@ -251,7 +260,9 @@ class ListCartOpen(mixins.ListModelMixin, generics.GenericAPIView):
 
 class ListCartPrevious(mixins.ListModelMixin, generics.GenericAPIView):
     serializer_class = CartSerializer
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
     queryset = Cart.objects.filter(status_payment='PID').all()
+    permission_classes = (IsAuthenticated,)
 
     def list(self, request, *args, **kwargs):
         queryset = Cart.objects.filter(status_payment='PID', customer=request.user).all()
@@ -272,6 +283,8 @@ class ListCartPrevious(mixins.ListModelMixin, generics.GenericAPIView):
 class Paymentcart(mixins.UpdateModelMixin,mixins.RetrieveModelMixin, generics.GenericAPIView):
     lookup_field = 'pk'
     lookup_url_kwarg = 'pk'
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         return Cart.objects.all()
@@ -352,6 +365,8 @@ class Paymentcart(mixins.UpdateModelMixin,mixins.RetrieveModelMixin, generics.Ge
 
 
 class AddProductToCart(APIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request, *args, **kwargs):
         serializer = AddProductToCartSerializer(request.data)
@@ -380,7 +395,10 @@ class AddProductToCart(APIView):
 
 class RemoveProductFromCart(mixins.RetrieveModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView):
     lookup_field = 'pk'
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = (IsAuthenticated,)
     lookup_url_kwarg = 'cart_id'
+
     def get_queryset(self):
         return Cart.objects.all()
        

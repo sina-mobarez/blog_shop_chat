@@ -1,5 +1,8 @@
 
 from inspect import CO_ITERABLE_COROUTINE
+from itertools import count
+from re import A
+from telnetlib import SE
 from django.contrib import messages
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -477,37 +480,188 @@ class ReportSale(ListView):
             count_list.append(count)
 
         list_data = zip(user_list, count_list)
-        print('============', list_data)
+    
         return list_data
 
     def get_context_data(self, **kwargs):
         context = super(ReportSale, self).get_context_data(**kwargs)
         shop = Shop.objects.get(slug=self.kwargs['slug'])
-        user_list = []
-        for item in shop.cart_set.all().filter(status_payment='PID'):
-            user_list.append(item.customer)
-        count_list = []
-        for user in user_list:
-            count = Cart.objects.filter(customer=user, shop=shop, status_payment='PID').count()
-            count_list.append(count)
+        cart = []
+        for item in shop.cart_set.all():
+            if item.status_payment == 'PID':
+                cart.append(item)
+        January = []
+        February = []
+        March = []
+        April = []
+        May = []
+        June = []
+        July = []
+        August = []
+        September = []
+        October = []
+        November = []
+        December = []
 
-        context['count_pay'] = count_list
-        prods = []
-        for product in shop.product_set.all():
-            prods.append(product.name)
-        context['prods'] = prods
+        for item in cart:
+            if item.paid_date.month == 1:
+                January.append(item)
+            elif item.paid_date.month == 2:
+                February.append(item)
+            elif item.paid_date.month == 3:
+                March.append(item)
+            elif item.paid_date.month == 4:
+                April.append(item)
+            elif item.paid_date.month == 5:
+                May.append(item)
+            elif item.paid_date.month == 6:
+                June.append(item)
+            elif item.paid_date.month == 7:
+                July.append(item)
+            elif item.paid_date.month == 8:
+                August.append(item)
+            elif item.paid_date.month == 9:
+                September.append(item)
+            elif item.paid_date.month == 10:
+                October.append(item)
+            elif item.paid_date.month == 11:
+                November.append(item)
+            elif item.paid_date.month == 12:
+                December.append(item)
+        data = [len(January), len(February), len(March), len(April), len(May), len(June), len(July), len(August),
+        len(September), len(October), len(November), len(December)]
+
         
-        carts = []
-        cart_items = []
-        for item in shop.cart_set.all().filter(status_payment='PID').distinct():
-            carts.append(item)
-        for cart in carts:
-            cart_items.append(cart.cartitem_set.all())
-        print('cart======================',cart_items)
-        product_count = []
-        for cartitem in cart_items:
-            product_count.append(cartitem.count())
-        print('======================',product_count)
+        print('----------------', data)
+        context['data'] = data
 
-        context['product_count'] = product_count
+
+        
         return context
+
+
+
+# ----------- charts -----------------
+
+
+# from django.contrib.admin.views.decorators import staff_member_required
+# from django.db.models import Count, F, Sum, Avg
+# from django.db.models.functions import ExtractYear, ExtractMonth
+# from django.http import JsonResponse
+
+# from .utils.charts import months, colorPrimary, colorSuccess, colorDanger, generate_color_palette, get_year_dict
+
+
+# @staff_member_required
+# def get_filter_options(request):
+#     grouped_purchases = Cart.objects.annotate(year=ExtractYear('created_at')).values('year').order_by('-year').distinct()
+#     options = [purchase['year'] for purchase in grouped_purchases]
+
+#     return JsonResponse({
+#         'options': options,
+#     })
+
+
+# @staff_member_required
+# def get_sales_chart(request, year):
+#     purchases = Cart.objects.filter(created_at__year=year)
+#     grouped_purchases = purchases.annotate(price=F('paid_amount')).annotate(month=ExtractMonth('created_at'))\
+#         .values('month').annotate(average=Sum('paid_amount')).values('month', 'average').order_by('month')
+
+#     sales_dict = get_year_dict()
+
+#     for group in grouped_purchases:
+#         sales_dict[months[group['month']-1]] = round(group['average'], 2)
+
+#     return JsonResponse({
+#         'title': f'Sales in {year}',
+#         'data': {
+#             'labels': list(sales_dict.keys()),
+#             'datasets': [{
+#                 'label': 'Amount ($)',
+#                 'backgroundColor': colorPrimary,
+#                 'borderColor': colorPrimary,
+#                 'data': list(sales_dict.values()),
+#             }]
+#         },
+#     })
+
+
+# @staff_member_required
+# def spend_per_customer_chart(request, year):
+#     purchases = Cart.objects.filter(created_at__year=year)
+#     grouped_purchases = Cart.annotate(price=F('cartitem__price')).annotate(month=ExtractMonth('created_at'))\
+#         .values('month').annotate(average=Avg('cartitem__price')).values('month', 'average').order_by('month')
+
+#     spend_per_customer_dict = get_year_dict()
+
+#     for group in grouped_purchases:
+#         spend_per_customer_dict[months[group['month']-1]] = round(group['average'], 2)
+
+#     return JsonResponse({
+#         'title': f'Spend per customer in {year}',
+#         'data': {
+#             'labels': list(spend_per_customer_dict.keys()),
+#             'datasets': [{
+#                 'label': 'Amount ($)',
+#                 'backgroundColor': colorPrimary,
+#                 'borderColor': colorPrimary,
+#                 'data': list(spend_per_customer_dict.values()),
+#             }]
+#         },
+#     })
+
+
+# @staff_member_required
+# def payment_success_chart(request, year):
+#     purchases = Cart.objects.filter(created_at__year=year)
+
+#     return JsonResponse({
+#         'title': f'Payment success rate in {year}',
+#         'data': {
+#             'labels': ['Successful', 'Unsuccessful'],
+#             'datasets': [{
+#                 'label': 'Amount ($)',
+#                 'backgroundColor': [colorSuccess, colorDanger],
+#                 'borderColor': [colorSuccess, colorDanger],
+#                 'data': [
+#                     purchases.filter(successful=True).count(),
+#                     purchases.filter(successful=False).count(),
+#                 ],
+#             }]
+#         },
+#     })
+
+
+# @staff_member_required
+# def payment_method_chart(request, year):
+#     purchases = Cart.objects.filter(created_at__year=year)
+#     grouped_purchases = purchases.values('status_payment').annotate(count=Count('id'))\
+#         .values('status_payment', 'count').order_by('payment_method')
+
+#     payment_method_dict = dict()
+
+#     for payment_method in Purchase.PAYMENT_METHODS:
+#         payment_method_dict[payment_method[1]] = 0
+
+#     for group in grouped_purchases:
+#         payment_method_dict[dict(Purchase.PAYMENT_METHODS)[group['payment_method']]] = group['count']
+
+#     return JsonResponse({
+#         'title': f'Payment method rate in {year}',
+#         'data': {
+#             'labels': list(payment_method_dict.keys()),
+#             'datasets': [{
+#                 'label': 'Amount ($)',
+#                 'backgroundColor': generate_color_palette(len(payment_method_dict)),
+#                 'borderColor': generate_color_palette(len(payment_method_dict)),
+#                 'data': list(payment_method_dict.values()),
+#             }]
+#         },
+#     })
+
+
+
+# @staff_member_required
+# def statistics_view(request):
+#     return render(request, 'report.html', {})

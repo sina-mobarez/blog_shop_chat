@@ -20,6 +20,7 @@
     <canvas id="myChart" width="400" height="400"></canvas>
   </div>
 </div>
+<hr>
 
   
 
@@ -69,28 +70,175 @@
     </div>
 </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    const labels = [
-        {% for item in prods %}
-        
-        '{{ item }}',
 
-        {% endfor %}
-    ];
+
+
+
+{% comment %} ----------------------new chart ----------------------- {% endcomment %}
+<!-- 
+<div class="container">
+  <form id="filterForm">
+    <label for="year">Choose a year:</label>
+    <select name="year" id="year"></select>
+    <input type="submit" value="Load" name="_load">
+  </form>
+  <div class="row">
+    <div class="col-6">
+      <canvas id="salesChart"></canvas>
+    </div>
+    <div class="col-6">
+      <canvas id="paymentSuccessChart"></canvas>
+    </div>
+    <div class="col-6">
+      <canvas id="spendPerCustomerChart"></canvas>
+    </div>
+    <div class="col-6">
+      <canvas id="paymentMethodChart"></canvas>
+    </div>
+  </div>
+  <script>
+    let salesCtx = document.getElementById("salesChart").getContext("2d");
+    let salesChart = new Chart(salesCtx, {
+      type: "bar",
+      options: {
+        responsive: true,
+      }
+    });
+    let spendPerCustomerCtx = document.getElementById("spendPerCustomerChart").getContext("2d");
+    let spendPerCustomerChart = new Chart(spendPerCustomerCtx, {
+      type: "line",
+      options: {
+        responsive: true,
+      }
+    });
+    let paymentSuccessCtx = document.getElementById("paymentSuccessChart").getContext("2d");
+    let paymentSuccessChart = new Chart(paymentSuccessCtx, {
+      type: "pie",
+      options: {
+        responsive: true,
+        layout: {
+          padding: {
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 25
+          }
+        }
+      }
+    });
+    let paymentMethodCtx = document.getElementById("paymentMethodChart").getContext("2d");
+    let paymentMethodChart = new Chart(paymentMethodCtx, {
+      type: "pie",
+      options: {
+        responsive: true,
+        layout: {
+          padding: {
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 25
+          }
+        }
+      }
+    });
+  </script>
+</div>
+
+
+<script>
+  $(document).ready(function() {
+    $.ajax({
+      url: "/shop/chart/filter-options/",
+      type: "GET",
+      dataType: "json",
+      success: (jsonResponse) => {
+        // Load all the options
+        jsonResponse.options.forEach(option => {
+          $("#year").append(new Option(option, option));
+        });
+        // Load data for the first option
+        loadAllCharts($("#year").children().first().val());
+      },
+      error: () => console.log("Failed to fetch chart filter options!")
+    });
+  });
+
+$("#filterForm").on("submit", (event) => {
+  event.preventDefault();
+
+  const year = $("#year").val();
+  loadAllCharts(year)
+});
+
+function loadChart(chart, endpoint) {
+  $.ajax({
+    url: endpoint,
+    type: "GET",
+    dataType: "json",
+    success: (jsonResponse) => {
+      // Extract data from the response
+      const title = jsonResponse.title;
+      const labels = jsonResponse.data.labels;
+      const datasets = jsonResponse.data.datasets;
+
+      // Reset the current chart
+      chart.data.datasets = [];
+      chart.data.labels = [];
+
+      // Load new data into the chart
+      chart.options.title.text = title;
+      chart.options.title.display = true;
+      chart.data.labels = labels;
+      datasets.forEach(dataset => {
+        chart.data.datasets.push(dataset);
+      });
+      chart.update();
+    },
+    error: () => console.log("Failed to fetch chart data from " + endpoint + "!")
+  });
+}
+
+function loadAllCharts(year) {
+  loadChart(salesChart, `/shop/chart/sales/${year}/`);
+  loadChart(spendPerCustomerChart, `/shop/chart/spend-per-customer/${year}/`);
+  loadChart(paymentSuccessChart, `/shop/chart/payment-success/${year}/`);
+  loadChart(paymentMethodChart, `/shop/chart/payment-method/${year}/`);
+}
+</script> -->
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<script>
+  console.log('sakajas')
+    const labels = [
+    'January', 'February', 'March', 'April',
+    'May', 'June', 'July', 'August',
+    'September', 'October', 'November', 'December'
+]
   
     const data = {
       labels: labels,
       datasets: [{
-        label: 'نمودار تعدا فروش هر محصول',
-        backgroundColor: 'rgb(255, 99, 132)',
+        label: 'نمودار تعداد فروش در هر ماه',
+        backgroundColor: [
+                  'rgba(255, 99, 132, 0.5)',
+                  'rgba(54, 162, 235, 0.5)',
+                  'rgba(255, 206, 86, 0.5)',
+                  'rgba(75, 192, 192, 0.5)',
+                  'rgba(153, 102, 255, 0.5)',
+                  'rgba(255, 159, 64, 0.5)',
+        ],
         borderColor: 'rgb(255, 99, 132)',
-        data: {{ product_count }},
+        data: {{ data }},
       }]
     };
   
     const config = {
-      type: 'line',
+      type: 'bar',
       data: data,
       options: {}
     };

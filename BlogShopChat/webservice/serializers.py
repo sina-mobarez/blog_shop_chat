@@ -4,6 +4,8 @@ from rest_framework import serializers
 from rest_framework.fields import ReadOnlyField
 from rest_framework.utils import model_meta
 from accounts.models import Profile, CustomUser
+from django.contrib.auth.password_validation import validate_password
+from rest_framework.validators import UniqueValidator
 
 from shop.models import Cart, CartItem, Product, Shop, Type, Category
  
@@ -22,6 +24,30 @@ class UserModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['username', 'phone', 'email']
+
+    email = serializers.EmailField(
+            required=True,
+            validators=[UniqueValidator(queryset=CustomUser.objects.all())]
+            )
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    
+    class Meta:
+        model = CustomUser
+        fields = ['email', 'phone','username', 'password',]
+        
+    
+    def create(self, validated_data):
+        user = CustomUser.objects.create(
+            phone=validated_data['phone'],
+            email=validated_data['email'],
+            username=validated_data['username']
+        )
+
+        
+        user.set_password(validated_data['password'])
+        user.save()
+
+        return user
 
 
 
