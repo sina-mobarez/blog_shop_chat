@@ -71,8 +71,6 @@ class UserProfileRetrieveUpdateDelete(mixins.RetrieveModelMixin, mixins.UpdateMo
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object(request)
-        # file = request.data['image']
-        # instance.image = file
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
@@ -128,7 +126,6 @@ class ConfirmedShopList(mixins.ListModelMixin, generics.GenericAPIView):
 
 class TypeList(mixins.ListModelMixin, generics.GenericAPIView):
     queryset = Type.objects.all()
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = (IsAuthenticated,)
     serializer_class = TypeSerializer
 
