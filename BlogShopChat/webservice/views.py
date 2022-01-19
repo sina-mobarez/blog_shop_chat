@@ -277,7 +277,7 @@ class ListCartPrevious(mixins.ListModelMixin, generics.GenericAPIView):
         return self.list(request, *args, **kwargs)
 
 
-class Paymentcart(mixins.UpdateModelMixin,mixins.RetrieveModelMixin, generics.GenericAPIView):
+class Paymentcart(mixins.UpdateModelMixin, mixins.RetrieveModelMixin, generics.GenericAPIView):
     lookup_field = 'pk'
     lookup_url_kwarg = 'pk'
     authentication_classes = [SessionAuthentication, BasicAuthentication]

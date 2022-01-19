@@ -51,12 +51,13 @@ urlpatterns = [
 	
 	              #path to our account's app endpoints
                   path("api/v1/",include("webservice.urls")),
+                  path('chat/', include('chat.urls')),
                   path('admin/', admin.site.urls),
                   path('login/', LoginView.as_view(), name='login'),
                   path('register/', RegisterView.as_view(), name='register'),
                   path('blog/', include('blog.urls')),
-                #   path('api/register', RegisterUser.as_view(), name='api-register'),
-                #   path('api/login', login_user, name='api-login'),
+                  path('api/register', RegisterUser.as_view(), name='api-register'),
+                  path('api/login', login_user, name='api-login'),
 
                   path('accounts/', include('django.contrib.auth.urls')),
                   path('', LandingPage.as_view(), name='landing-page'),

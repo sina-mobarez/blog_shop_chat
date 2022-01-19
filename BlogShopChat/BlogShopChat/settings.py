@@ -54,7 +54,9 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'crispy_forms',
     'widget_tweaks',
-    'django_extensions'
+    'django_extensions',
+    'channels',
+    'chat',
 ]
 
 MIDDLEWARE = [
@@ -87,7 +89,18 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'BlogShopChat.wsgi.application'
+# WSGI_APPLICATION = 'BlogShopChat.wsgi.application'
+ASGI_APPLICATION = 'BlogShopChat.asgi.application'
+
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('localhost', 6379)],
+        },
+    },
+}
 
 
 # Database

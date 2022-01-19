@@ -36,9 +36,12 @@ class PostList(ListView):
         context = super(PostList, self).get_context_data(**kwargs)
         context['category'] = Category.objects.annotate(count_post=Count('post'))
         context['tag'] = Tag.objects.annotate(count_post=Count('post'))
-        context['postslider1'] = Post.objects.annotate(count_com=Count('comments')).order_by('count_com')[0]
-        context['postslider2'] = Post.objects.annotate(count_com=Count('comments')).order_by('count_com')[1]
-        context['postslider3'] = Post.objects.annotate(count_com=Count('comments')).order_by('count_com')[2]
+        if len(Post.objects.annotate(count_com=Count('comments')).order_by('count_com')) > 0:
+            context['postslider1'] = Post.objects.annotate(count_com=Count('comments')).order_by('count_com')[0]
+        if Post.objects.annotate(count_com=Count('comments')).order_by('count_com'): 
+            context['postslider2'] = Post.objects.annotate(count_com=Count('comments')).order_by('count_com')[1]
+        if Post.objects.annotate(count_com=Count('comments')).order_by('count_com'):
+            context['postslider3'] = Post.objects.annotate(count_com=Count('comments')).order_by('count_com')[2]
         context['category_post'] = Post.objects.filter(category__id=self.kwargs.get('pk'))
         return context
 

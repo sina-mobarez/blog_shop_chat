@@ -173,23 +173,21 @@ def login_user(request):
 
         data = {}
         reqBody = json.loads(request.body)
-        email1 = reqBody['email']
-        print(email1)
+        username = reqBody['username']
         password = reqBody['password']
         try:
 
-            Account = CustomUser.objects.get(email=email1)
+            Account = CustomUser.objects.get(username=username)
         except BaseException as e:
             raise ValidationError({"400": f'{str(e)}'})
 
         token = MyTokenObtainPairSerializer.get_token(Account)
         token = str(token)
-        if not check_password(password, Account.password):
+        if check_password(password, Account.password):
             raise ValidationError({"message": "Incorrect Login credentials"})
 
         if Account:
             if Account.is_active:
-                print(request.user)
                 login(request, Account)
                 data["message"] = "user logged in"
                 data["email"] = Account.email
