@@ -343,7 +343,7 @@ class Paymentcart(mixins.UpdateModelMixin, mixins.RetrieveModelMixin, generics.G
                 'message': 'payment is success, your cart already paid',
                 
             },
-            status= status.HTTP_403_FORBIDDEN
+            status= status.HTTP_200_OK
 
         )
 
@@ -361,32 +361,36 @@ class Paymentcart(mixins.UpdateModelMixin, mixins.RetrieveModelMixin, generics.G
         )
 
 
-class AddProductToCart(APIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
-    permission_classes = (IsAuthenticated,)
+# class AddProductToCart(APIView):
+#     permission_classes = (IsAuthenticated,)
 
-    def post(self, request, *args, **kwargs):
-        serializer = AddProductToCartSerializer(request.data)
-        serializer.is_valid(raise_exception=True)
-        cart_id = serializers.validated_data['cart_id']
-        product_id = serializers.validated_data['product_id']
-        quantity = serializers.validated_data['quantity']
-        cart = get_object_or_404(Cart, pk=cart_id)
-        product = get_object_or_404(Product, pk=product_id)
-        item = get_object_or_404(CartItem, product=product, cart=cart)
-        if item in cart.cartitem_set.all():
-            return Response(
-            {
-                'message': 'this product already exists in your cart',
-                'offered': 'you can change quantity of this product'
-            },
-            status= status.HTTP_403_FORBIDDEN
-        )
-        else:
-            CartItem.objects.create(cart=cart, product=product, quantity=quantity)
-        cart = get_object_or_404(Cart, pk=cart_id)
-        success = CartSerializer(cart)
-        return Response(data=success.data, status=200)
+#     def post(self, request, *args, **kwargs):
+#         serializer = AddProductToCartSerializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         cart_id = serializer.validated_data['cart']
+#         product_id = serializer.validated_data['product']
+#         quantity = serializer.validated_data['quantity']
+#         print('============', product_id, cart_id, quantity)
+#         cart = get_object_or_404(Cart, id=cart_id)
+#         product = get_object_or_404(Product, id=product_id)
+#         item = CartItem.objects.get(product=product, cart=cart)
+#         print('.......................qabbbbbasjsakskas')
+#         if item:
+#             print('.......................>>>>>>>>>>>>>>>>>>>>>>')
+#             if item in cart.cartitem_set.all():
+#                 return Response(
+#                 {
+#                     'message': 'this product already exists in your cart',
+#                     'offered': 'you can change quantity of this product'
+#                 },
+#                 status= status.HTTP_403_FORBIDDEN
+#             )
+#             else:
+#                 CartItem.objects.create(cart=cart, product=product, quantity=quantity)
+#         print('.......................>>>>>>>>>>>>>>>>>>>>>>')
+#         cart = get_object_or_404(Cart, pk=cart_id)
+#         success = CartSerializer(cart)
+#         return Response(data=success.data, status=200)
 
 
 

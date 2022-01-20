@@ -1,4 +1,6 @@
+from http.client import responses
 from django.contrib.auth import authenticate, login, views as auth_views
+from django.http import request
 from django.http.response import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.utils.http import url_has_allowed_host_and_scheme
@@ -10,7 +12,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import AccessToken, BlacklistMixin, Token
 from accounts.models import CustomUser
-from webservice.serializers import UserModelSerializer
+from webservice.serializers import UserModelLoginSerializer, UserModelSerializer
 from rest_framework_simplejwt import views
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from django.db import IntegrityError
@@ -23,6 +25,8 @@ from webservice.serializers import UserModelSerializer
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
 
 
@@ -122,15 +126,14 @@ class RegisterView(generic.CreateView):
 #     except KeyError as e:
 #         print(e)
 #         raise ValidationError({"400": f'Field {str(e)} missing'})
-from drf_yasg import openapi
-from drf_yasg.utils import swagger_auto_schema
+
 class RegisterUser(APIView):
     permission_classes = [AllowAny]
     serializer_class = UserModelSerializer
 
-    # token_param_config = openapi.Parameter('data', openapi.IN_QUERY)
-
-    @swagger_auto_schema()
+    @swagger_auto_schema(request_body=UserModelSerializer,
+                         responses={400: "you have provided invalid parameters",
+                                    200: UserModelSerializer})
     def post(self, request, *args, **kwargs):
         
         try:
@@ -167,14 +170,56 @@ class RegisterUser(APIView):
 
 
 
-@api_view(["POST"])
-@permission_classes([AllowAny])
-def login_user(request):
+# @api_view(["POST"])
+# @permission_classes([AllowAny])
+# def login_user(request):
 
+#         data = {}
+#         reqBody = json.loads(request.body)
+#         username = reqBody['username']
+#         password = reqBody['password']
+#         try:
+
+#             Account = CustomUser.objects.get(username=username)
+#         except BaseException as e:
+#             raise ValidationError({"400": f'{str(e)}'})
+
+#         token = MyTokenObtainPairSerializer.get_token(Account)
+#         token = str(token)
+#         if check_password(password, Account.password):
+#             raise ValidationError({"message": "Incorrect Login credentials"})
+
+#         if Account:
+#             if Account.is_active:
+#                 login(request, Account)
+#                 data["message"] = "user logged in"
+#                 data["email"] = Account.email
+
+#                 Res = {"data": data, "token": token}
+
+#                 return Response(Res)
+
+#             else:
+#                 raise ValidationError({"400": f'Account not active'})
+
+#         else:
+#             raise ValidationError({"400": f'Account doesnt exist'})
+
+
+class LoginUser(APIView):
+    @swagger_auto_schema(request_body=UserModelLoginSerializer,
+                         responses={400: "account doesn't exist",
+                                    200: UserModelSerializer})
+    
+    def post(self, request,*args, **kwargs):
         data = {}
-        reqBody = json.loads(request.body)
-        username = reqBody['username']
-        password = reqBody['password']
+        print('==============',request.data)
+        serializer = UserModelLoginSerializer(data=request.data)
+
+
+        
+        username = request.data['username']
+        password = request.data['password']
         try:
 
             Account = CustomUser.objects.get(username=username)
@@ -183,7 +228,7 @@ def login_user(request):
 
         token = MyTokenObtainPairSerializer.get_token(Account)
         token = str(token)
-        if check_password(password, Account.password):
+        if not check_password(password, Account.password):
             raise ValidationError({"message": "Incorrect Login credentials"})
 
         if Account:
@@ -194,12 +239,10 @@ def login_user(request):
 
                 Res = {"data": data, "token": token}
 
-                return Response(Res)
+                return Response(Res, status=200)
 
             else:
                 raise ValidationError({"400": f'Account not active'})
 
         else:
             raise ValidationError({"400": f'Account doesnt exist'})
-
-

@@ -21,7 +21,7 @@ from drf_yasg import openapi
 from django.contrib import admin
 from django.contrib.staticfiles.urls import static
 from django.urls import path, include
-from accounts.views import LoginView, RegisterUser, RegisterView, login_user
+from accounts.views import LoginView, RegisterUser, RegisterView, LoginUser
 from . import settings
 from shop.views import LandingPage
 
@@ -57,7 +57,7 @@ urlpatterns = [
                   path('register/', RegisterView.as_view(), name='register'),
                   path('blog/', include('blog.urls')),
                   path('api/register', RegisterUser.as_view(), name='api-register'),
-                  path('api/login', login_user, name='api-login'),
+                  path('api/login', LoginUser.as_view(), name='api-login'),
 
                   path('accounts/', include('django.contrib.auth.urls')),
                   path('', LandingPage.as_view(), name='landing-page'),

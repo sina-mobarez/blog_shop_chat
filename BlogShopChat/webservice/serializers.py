@@ -111,7 +111,16 @@ class PaymentCartSerializer(serializers.Serializer):
 
 
 
-class AddProductToCartSerializer(serializers.Serializer):
-    product_id = serializers.IntegerField()
-    cart_id = serializers.IntegerField()
-    quantity = serializers.IntegerField()
+class AddProductToCartSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CartItem
+        fields = ['product', 'quantity', 'cart']
+        
+        
+class UserModelLoginSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CustomUser
+        fields = ['username', 'password']
+        
