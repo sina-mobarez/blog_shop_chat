@@ -7,9 +7,11 @@ from django.conf import settings
 
 
 
+
 class Chat (models.Model):
     roomname = models.CharField(blank=True, max_length=50)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL)
+    is_active = models.BooleanField(default=False)
     
     
     def __str__(self):
@@ -32,3 +34,6 @@ class Message(models.Model):
 
     def __str__(self):
         return self.author.username
+    
+    
+

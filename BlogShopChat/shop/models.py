@@ -96,7 +96,7 @@ class Shop(models.Model):
         (CONFIRMED, 'confirmed'),
         (ELIMINATED, 'eliminated'),
     ]
-    name = models.CharField(max_length=250)
+    name = models.CharField(max_length=250, unique=True)
     slug = models.SlugField(blank=True)
     type = models.ForeignKey(Type, verbose_name="type of shop", on_delete=models.DO_NOTHING)
     description = models.TextField()

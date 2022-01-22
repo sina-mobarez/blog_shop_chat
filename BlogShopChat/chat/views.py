@@ -9,12 +9,13 @@ from .models import Chat
 def index(request):
     user = request.user
     
-    chat_rooms = Chat.objects.filter(members = user)
+    chat_rooms = Chat.objects.filter(is_active=True)
+    my_chat_room = chat_rooms.filter(members=user)
     print(chat_rooms)
     context={
         
         
-        
+        'my_chat_rooms': my_chat_room,
         'chat_rooms' : chat_rooms
     }
     

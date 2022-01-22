@@ -56,7 +56,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'django_extensions',
     'channels',
-    'chat',
+    'chat.apps.ChatConfig',
 ]
 
 MIDDLEWARE = [
