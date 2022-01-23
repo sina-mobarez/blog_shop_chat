@@ -1,4 +1,6 @@
 from http.client import responses
+from pickle import TRUE
+from random import randint
 from django.contrib.auth import authenticate, login, views as auth_views
 from django.http import request
 from django.http.response import HttpResponseRedirect
@@ -21,12 +23,30 @@ import json
 from django.contrib.auth.hashers import check_password
 from rest_framework import status
 from webservice.serializers import UserModelSerializer
+from django.contrib.auth import login
+from .backends import UserModel, UserNotVerified
+from datetime import timedelta
+import redis
+
+
+from django.http import HttpResponseRedirect
+from django.urls import reverse_lazy
+from django.views.generic.base import View
+from django.views.generic.edit import CreateView, FormView
+from django.contrib.auth.views import LoginView
+from django.contrib.auth import login as auth_login, get_user_model
+from .utils import send_sms
+
+from django.contrib import messages
+from .forms import CustomUserCreationForm, VerifyForm
+
 
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
+
 
 
 
@@ -89,6 +109,98 @@ class LoginView(auth_views.LoginView):
     template_name = 'accounts/login.html'
     redirect_authenticated_user = True
 
+    
+    def get(self, request, *args, **kwargs):
+        #if any session there is, remove phone key
+        if 'phone' in self.request.session.keys():
+            del self.request.session['phone']
+        return super().get(self, request, *args, **kwargs)
+
+    def form_valid(self, form):
+        """Security check complete. Log the user in."""
+        try :
+            login(self.request, form.get_user())
+        except UserNotVerified:
+            """ exception will handeled by middleware"""
+            pass
+        else:
+            return HttpResponseRedirect(self.get_success_url())
+
+
+
+
+
+class VerifyMixin:
+    @property
+    def get_user(self):
+        try:
+            user = UserModel.objects.get(phone=self.request.session['phone'])
+            return user
+        except UserModel.DoesNotExist:
+            return 
+        except KeyError:
+            return
+
+    @property
+    def set_token(self):
+        token = randint(10000, 99999)
+        return str(token)
+    
+    def set_token_to_db(self, phone, token):
+        r = redis.Redis()
+        r.setex(str(f"otp{phone}"),timedelta(minutes=5),value=str(token))
+        return True
+       
+    def get_token_from_db(self, phone):
+        r = redis.Redis()
+        if redis.exists(str(f"otp{phone}")):
+            otp_code = r.get(str(f"otp{phone}"))
+            return eval(otp_code)
+        else:
+            return None
+
+
+class VerifyView(VerifyMixin, FormView):
+    form_class = VerifyForm
+    success_url = reverse_lazy('login')
+    template_name = 'accounts/verify.html'
+
+    def get(self, request, *args, **kwargs):
+        if self.user:
+            return super().get(self, request, *args, **kwargs)
+        else :
+            return HttpResponseRedirect(self.get_success_url())
+
+    def post(self, request, *args, **kwargs):
+        phone_number = str(request.POST.get('forcefield'))
+        otp_code = str(request.POST.get('otp_code'))
+        
+        if  self.get_token_from_db(phone_number) == otp_code:
+            user = self.get_user
+            user.is_verified = True
+            user.save()
+            messages.success(self.request,'شماره مبایل شما تایید شد')
+            return super().post(self, request, *args, **kwargs)
+        else :
+            messages.warning(self.request,'کد تایید اشتباه است ')
+            return self.form_invalid(self.form_class)
+
+    def get_context_data(self,**kwargs):
+        context = super().get_context_data(**kwargs)
+        context['phone']=self.request.session['phone']
+        return context
+
+class ResendVerifyView(VerifyMixin, View):
+    
+    def get(self, request, *args, **kwargs):
+        if self.get_user:
+            user = self.get_user
+            phone = user.phone
+            token = self.set_token
+            print('==========', phone, '======', token)
+            self.set_token_to_db(phone=phone, token=token)
+            send_sms(receptor=phone, token=token)
+        return HttpResponseRedirect(reverse_lazy('verify'))
 
 
 

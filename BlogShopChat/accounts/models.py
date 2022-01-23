@@ -1,3 +1,4 @@
+from xmlrpc.client import boolean
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, AbstractUser
 from django.core.validators import RegexValidator
@@ -66,10 +67,11 @@ class City(models.Model):
 
 
 class CustomUser(AbstractUser):
-    phone_regex = RegexValidator( regex = r'^(\+98?)?{?(0?9[0-9]{9,9}}?)$', message ="Phone number must be entered in the format +989999999999. Up to 10 digits allowed.")
+    phone_regex = RegexValidator( regex = '^9\d{9}$', message ="Phone number must be entered in the format +989999999999. Up to 10 digits allowed.")
     phone = models.CharField('Phone number',validators =[phone_regex], max_length=14, unique=True,null=True)
     email = models.EmailField(_('email address'), unique=True)
     REQUIRED_FIELDS = ['email', 'phone']
+    is_verified = models.BooleanField('verified', default=False, help_text='Designates whether this user has verified phone')
 
 
 

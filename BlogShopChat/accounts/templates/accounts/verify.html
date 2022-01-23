@@ -1,0 +1,35 @@
+{% extends "base_form.html" %}
+{% load widget_tweaks %}
+{% block content %}
+<div class="container">
+
+    <h1 class="text-center mt-5">احراز هویت</h1>
+    <hr>
+    
+    <div class="row" >
+        <div class="col-4 mx-auto" style="direction: rtl;">
+            <form method="post">
+                <div class="form-group"> 
+                    <label for="InputUser">کد تایید برای شماره مبایل : {{ phone }}</label>
+                    {{ form.otp_code|attr:"rows:20"|attr:"cols:20"|attr:"class:form-control"|attr:"id:InputUser" }}
+                    <small id="UserlHelp" class="form-text text-muted"></small> 
+                </div>
+                <div class="form-group"> 
+                    {{ form.forcefield|attr:"value:{{ phone }}"}}
+                </div>
+                <div class="col-12 mb-4">
+                    <button type="submit" class="btn btn-success btn-big">تایید کردن</button></div>
+                
+            </div>
+            <div class="mb-3">
+                <a href="{% url 'resend' %}">ارسال مجدد </a>
+        
+            </div>
+                {% csrf_token %}
+            </form>
+        </div>
+    </div>
+    </div>
+
+
+{% endblock %}
