@@ -153,8 +153,10 @@ class VerifyMixin:
        
     def get_token_from_db(self, phone):
         r = redis.Redis()
-        if redis.exists(str(f"otp{phone}")):
+        print('>>>>>>>>', r.exists(str(f"otp{phone}")))
+        if r.exists(str(f"otp{phone}")) == 1:
             otp_code = r.get(str(f"otp{phone}"))
+            print('1212121221>>>>>>>>>>',eval(otp_code))
             return eval(otp_code)
         else:
             return None
@@ -166,19 +168,21 @@ class VerifyView(VerifyMixin, FormView):
     template_name = 'accounts/verify.html'
 
     def get(self, request, *args, **kwargs):
-        if self.user:
+        if self.get_user:
             return super().get(self, request, *args, **kwargs)
         else :
             return HttpResponseRedirect(self.get_success_url())
 
     def post(self, request, *args, **kwargs):
-        phone_number = str(request.POST.get('forcefield'))
-        otp_code = str(request.POST.get('otp_code'))
         
+        phone_number = self.request.session['phone']
+        otp_code = str(request.POST.get('otp_code'))
+        print('.................',phone_number)
         if  self.get_token_from_db(phone_number) == otp_code:
             user = self.get_user
             user.is_verified = True
             user.save()
+            print('whaaaaaaaaaaaaaaaaaaaaaaaaaaat')
             messages.success(self.request,'شماره مبایل شما تایید شد')
             return super().post(self, request, *args, **kwargs)
         else :
@@ -197,9 +201,9 @@ class ResendVerifyView(VerifyMixin, View):
             user = self.get_user
             phone = user.phone
             token = self.set_token
-            print('==========', phone, '======', token)
+            print('==========', type(phone), '======', token)
             self.set_token_to_db(phone=phone, token=token)
-            send_sms(receptor=phone, token=token)
+            # send_sms(receptor=phone, token=token)
         return HttpResponseRedirect(reverse_lazy('verify'))
 
 

@@ -15,14 +15,14 @@
                     <small id="UserlHelp" class="form-text text-muted"></small> 
                 </div>
                 <div class="form-group"> 
-                    {{ form.forcefield|attr:"value:{{ phone }}"}}
+                    {{ form.forcefield }}
                 </div>
                 <div class="col-12 mb-4">
-                    <button type="submit" class="btn btn-success btn-big">تایید کردن</button></div>
+                    <button type="submit" class="btn btn-success btn-big" value={{ phone }} >تایید کردن</button></div>
                 
             </div>
             <div class="mb-3">
-                <a href="{% url 'resend' %}">ارسال مجدد </a>
+                <a href="{% url 'resend' %}">ارسال مجدد کد تایید</a>
         
             </div>
                 {% csrf_token %}
