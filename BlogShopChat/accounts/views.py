@@ -176,9 +176,11 @@ class VerifyView(VerifyMixin, FormView):
     def post(self, request, *args, **kwargs):
         
         phone_number = self.request.session['phone']
+        op =  self.get_token_from_db(phone_number)
+        print('otp from db : ',type(op))
         otp_code = str(request.POST.get('otp_code'))
-        print('.................',phone_number)
-        if  self.get_token_from_db(phone_number) == otp_code:
+        print('.................',type(otp_code))
+        if  str(self.get_token_from_db(phone_number)) == otp_code:
             user = self.get_user
             user.is_verified = True
             user.save()
