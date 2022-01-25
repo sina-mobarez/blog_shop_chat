@@ -48,6 +48,7 @@ urlpatterns = [
                   #path to djoser end points
                   path('auth/', include('djoser.urls')),
                   path('auth/', include('djoser.urls.jwt')),
+                  path('otp/', include('accounts.urls')),
 	
 	              #path to our account's app endpoints
                   path("api/v1/",include("webservice.urls")),

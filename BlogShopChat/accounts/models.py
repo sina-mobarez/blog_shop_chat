@@ -9,6 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from django.dispatch import receiver
 # from rest_framework.authtoken.models import Token
 from django.db.models.signals import post_save
+import pyotp
 
 
 import random
@@ -72,14 +73,26 @@ class CustomUser(AbstractUser):
     email = models.EmailField(_('email address'), unique=True)
     REQUIRED_FIELDS = ['email', 'phone']
     is_verified = models.BooleanField('verified', default=False, help_text='Designates whether this user has verified phone')
-
+    key = models.CharField(max_length=100, unique=True, blank=True)
 
 
     objects = UserManager()  
 
 
     def __str__(self):
-        return f'{self.phone} / {self.username}'     
+        return f'{self.phone} / {self.username}' 
+    
+    def authenticate(self, otp):
+        """ This method authenticates the given otp"""
+        provided_otp = 0
+        try:
+            provided_otp = int(otp)
+        except:
+            return False
+        #Here we are using Time Based OTP. The interval is 60 seconds.
+        #otp must be provided within this interval or it's invalid
+        t = pyotp.TOTP(self.key, interval=300)
+        return t.verify(provided_otp)    
 
 class Profile(models.Model):
     Male= 'male'

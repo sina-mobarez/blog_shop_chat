@@ -1,3 +1,5 @@
+from ast import Not
+from django.db.models import Q
 from http.client import responses
 from pickle import TRUE
 from random import randint
@@ -12,7 +14,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import AccessToken, BlacklistMixin, Token
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from accounts.models import CustomUser
 from webservice.serializers import UserModelLoginSerializer, UserModelSerializer
 from rest_framework_simplejwt import views
@@ -27,6 +29,8 @@ from django.contrib.auth import login
 from .backends import UserModel, UserNotVerified
 from datetime import timedelta
 import redis
+from .serializers import GetCodeVerifyPhoneNumber, VerifyPhoneNumber
+import pyotp
 
 
 from django.http import HttpResponseRedirect
@@ -261,9 +265,12 @@ class RegisterUser(APIView):
                 account = serializer.save()
                 account.is_active = True
                 account.save()
+                time_otp = pyotp.TOTP(account.key, interval=300)
+                time_otp = time_otp.now()
                 data["message"] = "user registered successfully"
                 data["email"] = account.email
                 data["username"] = account.username
+                data['otp_code'] = time_otp
 
             else:
                 data = serializer.errors
@@ -340,22 +347,22 @@ class LoginUser(APIView):
         password = request.data['password']
         try:
 
-            Account = CustomUser.objects.get(username=username)
+            Account = CustomUser.objects.get(Q(username__iexact=username) | Q(email__iexact=username) | Q(phone__iexact=username))
         except BaseException as e:
             raise ValidationError({"400": f'{str(e)}'})
 
-        token = MyTokenObtainPairSerializer.get_token(Account)
-        token = str(token)
+        token = AccessToken.for_user(Account)
+        print("--------------",token)
         if not check_password(password, Account.password):
             raise ValidationError({"message": "Incorrect Login credentials"})
 
         if Account:
             if Account.is_active:
-                login(request, Account)
+                login(request, Account, backend='accounts.backends.OtpBackend')
                 data["message"] = "user logged in"
                 data["email"] = Account.email
 
-                Res = {"data": data, "token": token}
+                Res = {"data": data, "token": str(token)}
 
                 return Response(Res, status=200)
 
@@ -364,3 +371,63 @@ class LoginUser(APIView):
 
         else:
             raise ValidationError({"400": f'Account doesnt exist'})
+        
+        
+
+class VerifyPhoneNumber(APIView):
+    @swagger_auto_schema(request_body=VerifyPhoneNumber,
+                         responses={400: "The provided code did not match or has expired",
+                                    201: "Phone number verified successfully"})
+    
+    def post(self, request,*args, **kwargs): 
+        phone = request.data['phone']
+        otp_code = request.data['otp_code']
+        try:
+
+            Account = CustomUser.objects.get(phone=phone)
+        except BaseException as e:
+            raise ValidationError({"400": f'{str(e)}'})
+
+
+        if Account:
+            if not Account.is_verified:
+                if Account.authenticate(otp_code):
+                    Account.is_verified=True
+                    Account.save()
+                    return Response(dict(detail = "Phone number verified successfully"),status=201)
+                else:
+                    return Response(dict(detail='The provided code did not match or has expired'),status=400)
+            else:
+                return Response(dict(detail='PhoneNumber verified before'),status=400)
+
+        else:
+            raise ValidationError({"400": f'Account with this phone number doesnt exist'})
+        
+        
+
+class GetCodeForVerify(APIView):
+    @swagger_auto_schema(request_body=GetCodeVerifyPhoneNumber,
+                         responses={400: "Account Verified before or doesn't exist",
+                                    200: "Verification Code sent to your Number"})
+    
+    def post(self, request,*args, **kwargs): 
+        phone = request.data['phone']
+        try:
+
+            Account = CustomUser.objects.get(phone=phone)
+        except BaseException as e:
+            raise ValidationError({"400": f'{str(e)}'})
+
+
+        if Account:
+            if not Account.is_verified:
+                time_otp = pyotp.TOTP(Account.key, interval=300)
+                time_otp = time_otp.now()
+                # send_sms(receptor=phone, token=time_otp)
+                print('=========== otp : ', time_otp)
+                return Response(dict(detail = "Verification Code sent to your Number"),status=200)
+            else:
+                return Response(dict(detail='PhoneNumber verified before'),status=400)
+
+        else:
+            raise ValidationError({"400": f'Account with this phone number doesnt exist'})

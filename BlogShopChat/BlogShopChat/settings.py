@@ -203,7 +203,7 @@ GRAPPELLI_CLEAN_INPUT_TYPES = True
 # custom user 
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
-AUTHENTICATION_BACKENDS = ['accounts.backends.EmailBackend']
+AUTHENTICATION_BACKENDS = ['accounts.backends.OtpBackend','accounts.backends.EmailBackend']
 
 
 
