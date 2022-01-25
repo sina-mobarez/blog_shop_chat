@@ -267,10 +267,10 @@ class RegisterUser(APIView):
                 account.save()
                 time_otp = pyotp.TOTP(account.key, interval=300)
                 time_otp = time_otp.now()
-                data["message"] = "user registered successfully"
+                
+                data["message"] = "user registered successfully, and otp is sent to your number"
                 data["email"] = account.email
                 data["username"] = account.username
-                data['otp_code'] = time_otp
 
             else:
                 data = serializer.errors
@@ -282,7 +282,7 @@ class RegisterUser(APIView):
                     status= status.HTTP_400_BAD_REQUEST
                 )
 
-
+            # send_sms(receptor=account.phone, token=time_otp)
             return Response(data, status=status.HTTP_201_CREATED)
         except IntegrityError as e:
             account=CustomUser.objects.get(username='')
