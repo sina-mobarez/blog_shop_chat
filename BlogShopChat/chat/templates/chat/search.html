@@ -91,7 +91,7 @@
 
 
                 <div class="">
-                    <h3>چت روم ها :</h3>
+                    <h3>جستجو برای : {{ searched }}</h3>
                     <hr>
                 </div>
 
@@ -104,7 +104,7 @@
                             <a href="#" class="list-group-item active">
                               
                             </a>
-                            {% for chat_room in chat_rooms %}
+                            {% for chat_room in chatrooms %}
                               <a href="http://localhost:8000/chat/{{ chat_room.roomname }}" class="list-group-item">
                                 <span class="badge"></span> {{ chat_room.roomname }}
                               </a>
@@ -113,15 +113,10 @@
                           </div>
                       </div>
                     </div>
-                </div>
 
             <div class="col-lg-4 col-md-3 col-sm-6 col-xs-12 pull-right" id="sidebar">
 
                 <div class="list-group bg-dark">
-                    <div class="">
-                        <h3>چت روم های من :</h3>
-                        <hr>
-                    </div>
                   
                     {% for chat_room in my_chat_rooms %}
                     <a href="http://localhost:8000/chat/{{ chat_room.roomname }}" style="color:red !important;" class="list-group-item">

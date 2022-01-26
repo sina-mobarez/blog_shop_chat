@@ -1,28 +1,20 @@
-from PIL.Image import MEDIANCUT
-from django.core.validators import validate_email
-from django.db.models.query import QuerySet
-from django.http import request
-from django.http.response import HttpResponse
-from django.views import generic
-from rest_framework import generics, mixins, serializers, viewsets, status
-from django.shortcuts import render, get_object_or_404
+from rest_framework import generics, mixins, status
+from django.shortcuts import get_object_or_404
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
-# Create your views here.
 
-
-from rest_framework.generics import (ListCreateAPIView,RetrieveUpdateDestroyAPIView,)
+from rest_framework.generics import ListCreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.views import APIView
+
 from accounts.models import Profile
 from shop.models import Cart, CartItem, Product, Shop, Type
-from .permissions import IsOwnerProfileOrReadOnly
-from .serializers import AddProductToCartSerializer, CartItemSerializer, CartSerializer, ConfirmedShop, PaymentCartSerializer, TypeSerializer, UserProfileSerializer, ProductSerializer
+
+from .serializers import CartItemSerializer, CartSerializer, ConfirmedShop, TypeSerializer, UserProfileSerializer, ProductSerializer
 from .filters import ShopListFilter, ProductListFilter
 from rest_framework.parsers import FormParser, MultiPartParser
 
-# Create your views here.
+
 
 class UserProfileListCreateView(ListCreateAPIView):
     queryset = Profile.objects.all()
@@ -35,19 +27,6 @@ class UserProfileListCreateView(ListCreateAPIView):
 
 
 
-
-# class userProfileViewSet(viewsets.ViewSet):
-#     queryset = Profile.objects.all()
-#     permission_classes=[IsOwnerProfileOrReadOnly,IsAuthenticated]
-#     print('innnjaaaaa')
-
-
-
-#     def retrieve(self, request, user=None):
-#         print('oooonjaaaa')
-#         item = get_object_or_404(self.queryset, user=request.user)
-#         serializer = UserProfileSerializer(item)
-#         return Response(serializer.data)
 
 class UserProfileRetrieveUpdateDelete(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, generics.GenericAPIView):
     queryset = Profile.objects.all()
@@ -108,6 +87,9 @@ class UserProfileRetrieveUpdateDelete(mixins.RetrieveModelMixin, mixins.UpdateMo
 
 
 
+
+
+
 class ConfirmedShopList(mixins.ListModelMixin, generics.GenericAPIView):
     queryset = Shop.confirmed.all()
     authentication_classes = [SessionAuthentication, BasicAuthentication]
@@ -124,6 +106,8 @@ class ConfirmedShopList(mixins.ListModelMixin, generics.GenericAPIView):
 
 
 
+
+
 class TypeList(mixins.ListModelMixin, generics.GenericAPIView):
     queryset = Type.objects.all()
     permission_classes = (IsAuthenticated,)
@@ -131,6 +115,8 @@ class TypeList(mixins.ListModelMixin, generics.GenericAPIView):
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
+
+
 
 
 
@@ -150,6 +136,8 @@ class ProductList(mixins.ListModelMixin, generics.GenericAPIView):
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return ProductSerializer
+
+
 
 
 
@@ -186,9 +174,7 @@ class AddItemToCart(mixins.CreateModelMixin, mixins.ListModelMixin, generics.Gen
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        print('=====================',serializer)
         product = serializer.validated_data['product']
-        print('produvy ----------- ', product)
         shop = product.shop
 
         have_pending_cart = len(Cart.objects.filter(customer=request.user, status_payment='PND', shop=shop))
@@ -228,8 +214,7 @@ class AddItemToCart(mixins.CreateModelMixin, mixins.ListModelMixin, generics.Gen
 
 
 
-class UpdateCart:
-     pass
+
 
 
 
@@ -255,6 +240,9 @@ class ListCartOpen(mixins.ListModelMixin, generics.GenericAPIView):
         return self.list(request, *args, **kwargs)
 
 
+
+
+
 class ListCartPrevious(mixins.ListModelMixin, generics.GenericAPIView):
     serializer_class = CartSerializer
     authentication_classes = [SessionAuthentication, BasicAuthentication]
@@ -275,6 +263,9 @@ class ListCartPrevious(mixins.ListModelMixin, generics.GenericAPIView):
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
+
+
+
 
 
 class Paymentcart(mixins.UpdateModelMixin, mixins.RetrieveModelMixin, generics.GenericAPIView):
@@ -361,36 +352,7 @@ class Paymentcart(mixins.UpdateModelMixin, mixins.RetrieveModelMixin, generics.G
         )
 
 
-# class AddProductToCart(APIView):
-#     permission_classes = (IsAuthenticated,)
 
-#     def post(self, request, *args, **kwargs):
-#         serializer = AddProductToCartSerializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         cart_id = serializer.validated_data['cart']
-#         product_id = serializer.validated_data['product']
-#         quantity = serializer.validated_data['quantity']
-#         print('============', product_id, cart_id, quantity)
-#         cart = get_object_or_404(Cart, id=cart_id)
-#         product = get_object_or_404(Product, id=product_id)
-#         item = CartItem.objects.get(product=product, cart=cart)
-#         print('.......................qabbbbbasjsakskas')
-#         if item:
-#             print('.......................>>>>>>>>>>>>>>>>>>>>>>')
-#             if item in cart.cartitem_set.all():
-#                 return Response(
-#                 {
-#                     'message': 'this product already exists in your cart',
-#                     'offered': 'you can change quantity of this product'
-#                 },
-#                 status= status.HTTP_403_FORBIDDEN
-#             )
-#             else:
-#                 CartItem.objects.create(cart=cart, product=product, quantity=quantity)
-#         print('.......................>>>>>>>>>>>>>>>>>>>>>>')
-#         cart = get_object_or_404(Cart, pk=cart_id)
-#         success = CartSerializer(cart)
-#         return Response(data=success.data, status=200)
 
 
 

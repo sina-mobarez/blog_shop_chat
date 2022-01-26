@@ -7,11 +7,16 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 
 
+
+
 @receiver(post_save, sender=Shop)
 def create_chatroom(sender, instance, created, **kwargs):
     if created:
         chat.models.Chat.objects.create(roomname=instance.name)
         print('=============chatroom================create')
+        
+        
+        
         
 @receiver(post_save, sender=Shop)       
 def update_chatroom(sender, instance, created, **kwargs):
@@ -21,6 +26,9 @@ def update_chatroom(sender, instance, created, **kwargs):
             chatroom.is_active = True
             chatroom.save()
             print('=================chatroom is active===============')
+            
+            
+            
             
 @receiver(post_save, sender=Cart)         
 def add_member_to_chatroom(sender, instance, created, **kwargs):

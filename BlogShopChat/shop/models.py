@@ -1,7 +1,7 @@
 from datetime import datetime
 from io import BytesIO
-from os import name
-from random import choice, randint
+
+from random import randint
 import random
 from PIL import Image
 from django.conf import settings
@@ -14,17 +14,27 @@ from django.db import models
 from django.urls.base import reverse
 
 
+
+
 class EliminatedManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(status= 'ELM')
+
+
+
 
 class PendingManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(status= 'PEN')
 
+
+
 class ConfirmedManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(status= 'CON')
+
+
+
 
 def unique_slugify(instance, slug):
     model = instance.__class__
@@ -34,12 +44,16 @@ def unique_slugify(instance, slug):
     return unique_slug
 
 
+
+
 def unique_order_number(instance, prefix):
     model = instance.__class__
     unique_number = prefix
     while model.objects.filter(order_number=prefix).exists():
         unique_number = unique_number + get_random_string(length=4)
     return unique_number
+
+
 
 
 
@@ -65,6 +79,8 @@ class Category(models.Model):
 
 
 
+
+
 class Type(models.Model):
     name = models.CharField('name', max_length=255)
     slug = models.SlugField('slug' , blank=True)
@@ -84,6 +100,8 @@ class Type(models.Model):
     
     def get_absolute_url(self):
         return reverse("post-category", kwargs={"slug": self.slug})        
+
+
 
 
 
@@ -128,6 +146,8 @@ class Shop(models.Model):
 
 
 
+
+
 class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.DO_NOTHING)
     name = models.CharField(max_length=255)
@@ -165,6 +185,8 @@ class Product(models.Model):
     
     def get_absolute_url(self):
         return f'/{self.category}/{self.slug}/'
+
+
 
 
 

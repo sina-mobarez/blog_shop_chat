@@ -43,14 +43,14 @@ INSTALLED_APPS = [
     'blog',
     'shop',
     'webservice',
-    #third party package for user registration and authentication endpoints 	
+    	
     'djoser',
     'django_filters',
 	
-    #rest API implementation library for django
+   
     'rest_framework',
 	
-	#JWT authentication backend library
+	
     'rest_framework_simplejwt',
     'crispy_forms',
     'widget_tweaks',

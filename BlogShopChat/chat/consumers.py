@@ -7,7 +7,11 @@ from rest_framework.renderers import JSONRenderer
 from django.contrib.auth import get_user_model
 
 
+
+
 user = get_user_model()
+
+
 
 
 class ChatConsumer(WebsocketConsumer):
@@ -97,6 +101,9 @@ class ChatConsumer(WebsocketConsumer):
     
     }
     
+    
+    
+    
     def disconnect(self, close_code):
         async_to_sync(self.channel_layer.group_discard)(
 
@@ -104,12 +111,17 @@ class ChatConsumer(WebsocketConsumer):
             self.channel_name
             
         )
+        
+        
+        
     
     def receive(self, text_data):
         text_data_dict = json.loads(text_data)
         command = text_data_dict['command']
         
         self.commands[command](self, text_data_dict)
+        
+        
         
         
         
@@ -131,6 +143,8 @@ class ChatConsumer(WebsocketConsumer):
             
             
         )
+        
+        
 
     
     def chat_message(self, event):

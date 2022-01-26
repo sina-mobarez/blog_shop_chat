@@ -6,8 +6,6 @@ from django.conf import settings
 
 
 
-
-
 class Chat (models.Model):
     roomname = models.CharField(blank=True, max_length=50)
     members = models.ManyToManyField(settings.AUTH_USER_MODEL)
@@ -17,6 +15,7 @@ class Chat (models.Model):
     def __str__(self):
         return self.roomname
     
+
 
 
 

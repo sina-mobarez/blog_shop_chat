@@ -68,7 +68,7 @@ class City(models.Model):
 
 
 class CustomUser(AbstractUser):
-    phone_regex = RegexValidator( regex = '^9\d{9}$', message ="Phone number must be entered in the format +989999999999. Up to 10 digits allowed.")
+    phone_regex = RegexValidator( regex = '^9\d{9}$', message ="Phone number must be entered in the format 9999999999. Up to 10 digits allowed.")
     phone = models.CharField('Phone number',validators =[phone_regex], max_length=14, unique=True,null=True)
     email = models.EmailField(_('email address'), unique=True)
     REQUIRED_FIELDS = ['email', 'phone']

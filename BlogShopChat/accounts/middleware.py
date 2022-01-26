@@ -2,6 +2,8 @@ from .backends import UserNotVerified
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 
+
+
 class UserVerifyMiddleware:
 
     def __init__(self, get_response):
@@ -12,6 +14,6 @@ class UserVerifyMiddleware:
         return response
     
     def process_exception(self, request, exception):
-        # Middleware handles UserNotVerified error
+        
         if isinstance(exception, UserNotVerified):
             return HttpResponseRedirect(reverse_lazy('resend'))

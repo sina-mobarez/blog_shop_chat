@@ -1,8 +1,3 @@
-
-from inspect import CO_ITERABLE_COROUTINE
-from itertools import count
-from re import A
-from telnetlib import SE
 from django.contrib import messages
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -11,7 +6,6 @@ from django.core.mail import send_mail
 from django.db.models.aggregates import Count
 
 from django.forms.models import modelformset_factory
-from django.http import request
 from django.http.response import BadHeaderError, HttpResponse, JsonResponse
 
 
@@ -23,14 +17,11 @@ from django.views.generic import ListView
 from django.views.generic.base import TemplateView, View
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from rest_framework import status
 
-from accounts.models import CustomUser
 from .forms import *
-
-
 from .models import *
-# Create your views here.
+
+
 
 
 @method_decorator(login_required, name='dispatch')
@@ -44,7 +35,6 @@ class Dashboard(ListView):
         return Shop.confirmed.filter(owner=self.request.user)
 
     def get_context_data(self, **kwargs):
-        print(self.request.user.shop_set.filter(status='PEN').first())
         context = super(Dashboard, self).get_context_data(**kwargs)
         context['user'] = self.request.user
         if len(Shop.pending.filter(owner=self.request.user)) > 0:
@@ -59,6 +49,8 @@ class Dashboard(ListView):
 
 
 
+
+
 @method_decorator(login_required, name='dispatch')
 class CategoryDetail(DetailView):
 
@@ -68,11 +60,13 @@ class CategoryDetail(DetailView):
     paginate_by = 4
 
     def get_context_data(self, **kwargs):
-        print('query------',self.object.product_set.all() )
         context = super(CategoryDetail, self).get_context_data(**kwargs)
         context['types'] = Type.objects.filter(shop__owner=self.request.user).distinct().annotate(count_shop=Count('shop'))
         context['category'] = Category.objects.filter(product__owner=self.request.user).distinct().annotate(count_product=Count('product'))
         return context
+
+
+
 
 
 @method_decorator(login_required, name='dispatch')
@@ -90,6 +84,8 @@ class TypeDetail(DetailView):
         return context
 
 
+
+
 @method_decorator(login_required, name='dispatch')
 class DeleteCategory(DeleteView):
     model = Category
@@ -98,11 +94,16 @@ class DeleteCategory(DeleteView):
 
 
 
+
+
 @method_decorator(login_required, name='dispatch')
 class DeleteType(DeleteView):
     model = Type
     template_name = 'delete_type.html'
     success_url = reverse_lazy('add-type-category')
+
+
+
 
 
 
@@ -117,12 +118,16 @@ class EditCategory(UpdateView):
 
 
 
+
+
 @method_decorator(login_required, name='dispatch')
 class EditType(UpdateView):
     model = Type
     fields = ['name',]
     template_name = 'edit_type.html'
     success_url = reverse_lazy('add-type-category')
+
+
 
 
 
@@ -171,6 +176,8 @@ class ShopDetail(DetailView):
 
 
   
+  
+  
 
 
 
@@ -188,6 +195,9 @@ def shop_no_pending_required(function=None, redirect_field_name=REDIRECT_FIELD_N
     if function:
         return actual_decorator(function)
     return actual_decorator
+
+
+
 
 
 @method_decorator(shop_no_pending_required(redirect_url='dashboard-shop'), name='dispatch')
@@ -214,14 +224,6 @@ class CreateShop(CreateView):
 
 
 
-# for pemenantly deleted shop
-
-# @method_decorator(login_required, name='dispatch')
-# class DeleteShop(DeleteView):
-#     model = Shop
-#     template_name = 'delete_shop.html'
-#     success_url = reverse_lazy('dashboard-shop')
-
 
 @method_decorator(login_required, name='dispatch')
 class DeleteShop(UpdateView):
@@ -236,6 +238,7 @@ class DeleteShop(UpdateView):
         self.object.status = 'ELM'
         self.object.save()
         return super().form_valid(form)
+
 
 
 
@@ -255,6 +258,8 @@ class UpdateShop(UpdateView):
         self.object.status = 'PEN'
         self.object.save()
         return super().form_valid(form)
+
+
 
 
 
@@ -278,7 +283,6 @@ class AddTypeCategory(View):
         if request.POST['forcefield'] == 'c':    
             category_form = CategoryForm(request.POST) 
             if category_form.is_valid():
-                print('------------------------clinead',category_form.cleaned_data)
                 category_form.save()  
                 return redirect('add-type-category')
         elif request.POST['forcefield'] == 't':
@@ -291,12 +295,14 @@ class AddTypeCategory(View):
 
 
 
+
+
 @login_required
 def add_product(request, slug):
  
     ImageFormSet = modelformset_factory(Picture,form=PictureForm, extra=4)
     shop = get_object_or_404(Shop, slug=slug)
-    #'extra' means the number of photos that you can upload   ^
+    
     
     if request.method == 'POST':
     
@@ -312,23 +318,24 @@ def add_product(request, slug):
             product_form.save()
     
             for form in formset.cleaned_data:
-                #this helps to not crash if the user   
-                #do not upload all the photos
+ 
                 if form:
                     image = form['image']
                     photo = Picture(product=product_form, image=image)
                     photo.save()
-            # use django messages framework
+  
             messages.success(request,"Yeeew, check it out on the home page!")
             return redirect(f'http://127.0.0.1:8000/shop/dashboard/{slug}')
         else:
             print(productForm.errors, formset.errors)
     else:
-        print(shop)
         postForm = ProductForm()
         formset = ImageFormSet(queryset=Picture.objects.none())
     return render(request, 'add_product.html',
                   {'postForm': postForm, 'formset': formset})
+
+
+
 
 
 
@@ -340,7 +347,6 @@ class ProductDetail(DetailView):
 
 
     def get_context_data(self, **kwargs):
-        print(Picture.objects.filter(product=self.object))
         context = super(ProductDetail, self).get_context_data(**kwargs)
         context['shop'] = Shop.objects.filter(owner=self.request.user).filter(product=self.object)
     
@@ -351,6 +357,9 @@ class ProductDetail(DetailView):
         return context
 
 
+
+
+
 @method_decorator(login_required, name='dispatch')
 class Editproduct(UpdateView):
     model = Product
@@ -359,11 +368,15 @@ class Editproduct(UpdateView):
     success_url = reverse_lazy('dashboard-shop')
 
 
+
+
 @method_decorator(login_required, name='dispatch')
 class DeleteProdcut(DeleteView):
     model = Product
     template_name = 'delete_product.html'
     success_url = reverse_lazy('dashboard-shop')
+
+
 
 
 
@@ -415,6 +428,9 @@ class CartDetail(DetailView):
         return self.render_to_response(context)
 
 
+
+
+
 @method_decorator(login_required, name='dispatch')
 class SearchByDate(View):
     def post(self, request, *args, **kwargs):
@@ -429,11 +445,13 @@ class SearchByDate(View):
         carts = Cart.objects.filter(shop__slug=shop)
         return render(request, 'search_by_date.html', {'cart': carts})
 
+
+
+
 @login_required
 def change_status(request):
     status = request.GET.get('status', None)
     id = request.GET.get('cartid', None)
-    print('--------', status, id)
     cartitem = Cart.objects.get(pk=id)
     cartitem.status_payment = status
     cartitem.save()
@@ -452,9 +470,15 @@ def change_status(request):
 
 
 
+
+
 class LandingPage(TemplateView):
 
     template_name = "landing.html"
+
+
+
+
 
 
 class ReportSale(ListView):
@@ -482,6 +506,8 @@ class ReportSale(ListView):
         list_data = zip(user_list, count_list)
     
         return list_data
+
+
 
     def get_context_data(self, **kwargs):
         context = super(ReportSale, self).get_context_data(**kwargs)
@@ -531,137 +557,6 @@ class ReportSale(ListView):
         data = [len(January), len(February), len(March), len(April), len(May), len(June), len(July), len(August),
         len(September), len(October), len(November), len(December)]
 
-        
-        print('----------------', data)
         context['data'] = data
-
-
-        
         return context
 
-
-
-# ----------- charts -----------------
-
-
-# from django.contrib.admin.views.decorators import staff_member_required
-# from django.db.models import Count, F, Sum, Avg
-# from django.db.models.functions import ExtractYear, ExtractMonth
-# from django.http import JsonResponse
-
-# from .utils.charts import months, colorPrimary, colorSuccess, colorDanger, generate_color_palette, get_year_dict
-
-
-# @staff_member_required
-# def get_filter_options(request):
-#     grouped_purchases = Cart.objects.annotate(year=ExtractYear('created_at')).values('year').order_by('-year').distinct()
-#     options = [purchase['year'] for purchase in grouped_purchases]
-
-#     return JsonResponse({
-#         'options': options,
-#     })
-
-
-# @staff_member_required
-# def get_sales_chart(request, year):
-#     purchases = Cart.objects.filter(created_at__year=year)
-#     grouped_purchases = purchases.annotate(price=F('paid_amount')).annotate(month=ExtractMonth('created_at'))\
-#         .values('month').annotate(average=Sum('paid_amount')).values('month', 'average').order_by('month')
-
-#     sales_dict = get_year_dict()
-
-#     for group in grouped_purchases:
-#         sales_dict[months[group['month']-1]] = round(group['average'], 2)
-
-#     return JsonResponse({
-#         'title': f'Sales in {year}',
-#         'data': {
-#             'labels': list(sales_dict.keys()),
-#             'datasets': [{
-#                 'label': 'Amount ($)',
-#                 'backgroundColor': colorPrimary,
-#                 'borderColor': colorPrimary,
-#                 'data': list(sales_dict.values()),
-#             }]
-#         },
-#     })
-
-
-# @staff_member_required
-# def spend_per_customer_chart(request, year):
-#     purchases = Cart.objects.filter(created_at__year=year)
-#     grouped_purchases = Cart.annotate(price=F('cartitem__price')).annotate(month=ExtractMonth('created_at'))\
-#         .values('month').annotate(average=Avg('cartitem__price')).values('month', 'average').order_by('month')
-
-#     spend_per_customer_dict = get_year_dict()
-
-#     for group in grouped_purchases:
-#         spend_per_customer_dict[months[group['month']-1]] = round(group['average'], 2)
-
-#     return JsonResponse({
-#         'title': f'Spend per customer in {year}',
-#         'data': {
-#             'labels': list(spend_per_customer_dict.keys()),
-#             'datasets': [{
-#                 'label': 'Amount ($)',
-#                 'backgroundColor': colorPrimary,
-#                 'borderColor': colorPrimary,
-#                 'data': list(spend_per_customer_dict.values()),
-#             }]
-#         },
-#     })
-
-
-# @staff_member_required
-# def payment_success_chart(request, year):
-#     purchases = Cart.objects.filter(created_at__year=year)
-
-#     return JsonResponse({
-#         'title': f'Payment success rate in {year}',
-#         'data': {
-#             'labels': ['Successful', 'Unsuccessful'],
-#             'datasets': [{
-#                 'label': 'Amount ($)',
-#                 'backgroundColor': [colorSuccess, colorDanger],
-#                 'borderColor': [colorSuccess, colorDanger],
-#                 'data': [
-#                     purchases.filter(successful=True).count(),
-#                     purchases.filter(successful=False).count(),
-#                 ],
-#             }]
-#         },
-#     })
-
-
-# @staff_member_required
-# def payment_method_chart(request, year):
-#     purchases = Cart.objects.filter(created_at__year=year)
-#     grouped_purchases = purchases.values('status_payment').annotate(count=Count('id'))\
-#         .values('status_payment', 'count').order_by('payment_method')
-
-#     payment_method_dict = dict()
-
-#     for payment_method in Purchase.PAYMENT_METHODS:
-#         payment_method_dict[payment_method[1]] = 0
-
-#     for group in grouped_purchases:
-#         payment_method_dict[dict(Purchase.PAYMENT_METHODS)[group['payment_method']]] = group['count']
-
-#     return JsonResponse({
-#         'title': f'Payment method rate in {year}',
-#         'data': {
-#             'labels': list(payment_method_dict.keys()),
-#             'datasets': [{
-#                 'label': 'Amount ($)',
-#                 'backgroundColor': generate_color_palette(len(payment_method_dict)),
-#                 'borderColor': generate_color_palette(len(payment_method_dict)),
-#                 'data': list(payment_method_dict.values()),
-#             }]
-#         },
-#     })
-
-
-
-# @staff_member_required
-# def statistics_view(request):
-#     return render(request, 'report.html', {})
