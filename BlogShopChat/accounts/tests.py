@@ -59,6 +59,12 @@ class TestLoginRegisterVerifyGetCode(APITestCase):
         self.assertEqual(res.status_code, 200)
         
     
+    def test_user_get_code_for_verify_phone_number_by_wrong_number(self):
+        user = mommy.make(CustomUser, email='sina@sina.com', password='qwe123123', phone='9124547878')
+        res = self.client.post(self.get_code_for_verify_phone_number_url, data={'phone': '9175689869'}, format='json')
+        self.assertEqual(res.status_code, 400)
+    
+    
     def test_user_can_verify_phone_number(self):
         self.client.post(self.register_url, self.user_data_register, format="json")
         res = self.client.post(self.verify_phone_number_url, data={'phone': '9901232121', 'otp_code': '125698'}, format='json')
