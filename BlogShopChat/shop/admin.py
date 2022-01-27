@@ -1,30 +1,42 @@
 
 from django.contrib import admin
-from django.db import models
 from django.utils.html import format_html
 from django.contrib.auth import get_user_model
 from .models import *
 
 
-# Register your models here.
+
+
 User = get_user_model()
+
+
 
 class CustomerInline(admin.TabularInline):
     model = User
 
+
+
 class ProductInline(admin.TabularInline):
     model = Product
 
+
+
 class CartInline(admin.TabularInline):
     model = Cart
+
+
 
 class CategoryInline(admin.TabularInline):
     model = Category
 
 
+
+
 @admin.action(description='Mark selected shop as confirmed')
 def make_confirmed(modeladmin, request, queryset):
     queryset.update(status='CON')
+
+
 
 
 class ShopAdmin(admin.ModelAdmin):
@@ -44,10 +56,14 @@ class ShopAdmin(admin.ModelAdmin):
     list_editable = ('status',)
 
 
+
+
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name','slug',)
     list_filter = ('name',)
     search_fields = ('name',)
+
+
 
 
 
@@ -59,6 +75,8 @@ class CartAdmin(admin.ModelAdmin):
 
     list_editable = ('status_payment',)
 
+
+
 class CartItemAdmin(admin.ModelAdmin):
     list_display = ('product','cart', 'quantity', 'price',)
     list_filter = ('price',)
@@ -66,6 +84,8 @@ class CartItemAdmin(admin.ModelAdmin):
 
 
     list_editable = ('quantity',)
+
+
 
 
 class ProductAdmin(admin.ModelAdmin):
@@ -77,7 +97,6 @@ class ProductAdmin(admin.ModelAdmin):
     @admin.display(empty_value='-',description="image")
     def show_image(self, obj):
         if (obj.picture_set.all().first()):
-            print('woooow',obj.picture_set.all().first().thumbnail.url)
             return format_html(
                 '<img src="{}" width=50 height=50/>',
                 obj.picture_set.all().first().thumbnail.url,
@@ -87,6 +106,9 @@ class ProductAdmin(admin.ModelAdmin):
 
 
     list_editable = ('quantity', 'price')
+
+
+
 
 class PictureAdmin(admin.ModelAdmin):
     list_display = ('product','name', 'default','image_test')
@@ -115,6 +137,9 @@ class PictureAdmin(admin.ModelAdmin):
             'fields': ('thumbnail',),
         }),
     )
+
+
+
 
 
 

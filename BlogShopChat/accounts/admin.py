@@ -4,23 +4,21 @@ from django.contrib import admin
 User = get_user_model()
 
 from .forms import CustomUserCreationForm
-from django.contrib.auth.models import Group
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import Country, City, Profile
-# from .forms import UserAdminCreationForm, UserAdminChangeForm
+from .models import Country, City, Profile, CustomUser
+
 
 
 
 class CustomUserAdmin(BaseUserAdmin):
 
     add_form = CustomUserCreationForm
-    # form = CustomUserChangeForm
     model = User
-    list_display = ('username','email','phone', 'is_staff', 'is_active',)
+    list_display = ('username','email','phone', 'is_staff', 'is_active','is_verified', 'is_seller')
     list_filter = ('username','email','phone','is_staff', 'is_active',)
     fieldsets = (
         (None, {'fields': ('email', 'password',),}),
-        ('Permissions', {'fields': ('is_staff', 'is_active')}),
+        ('Permissions', {'fields': ('is_staff', 'is_active', 'is_verified')}),
     )
     add_fieldsets = (
         (None, {
@@ -37,10 +35,18 @@ class CustomUserAdmin(BaseUserAdmin):
         return super(CustomUserAdmin, self).get_inline_instances(request, obj)
 
 
-admin.site.register(User, CustomUserAdmin)
+
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'image', 'sexuality', 'age','description',)
+    list_filter = ('sexuality',)
+    search_fields = ('age',)
+
+
+
+admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(City)
 admin.site.register(Country)
-admin.site.register(Profile)
+admin.site.register(Profile, ProfileAdmin)
 
 
 

@@ -7,6 +7,9 @@ from shop.models import Product, Shop
 
 
 
+
+
+
 class ShopListFilter(django_filters.FilterSet):
     type__name = django_filters.CharFilter(method='filter_type')
     product_count = django_filters.NumberFilter(method='filter_product_count')
@@ -31,6 +34,8 @@ class ShopListFilter(django_filters.FilterSet):
     def filter_type_contains(self,queryset, key, value):
         queryset = queryset.filter(type__name__contains=value)
         return queryset
+
+
 
 
 

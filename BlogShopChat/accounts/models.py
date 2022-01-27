@@ -1,3 +1,4 @@
+from xmlrpc.client import boolean
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, AbstractUser
 from django.core.validators import RegexValidator
@@ -8,6 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from django.dispatch import receiver
 # from rest_framework.authtoken.models import Token
 from django.db.models.signals import post_save
+import pyotp
 
 
 import random
@@ -66,18 +68,32 @@ class City(models.Model):
 
 
 class CustomUser(AbstractUser):
-    phone_regex = RegexValidator( regex = r'^(\+98?)?{?(0?9[0-9]{9,9}}?)$', message ="Phone number must be entered in the format +989999999999. Up to 10 digits allowed.")
+    phone_regex = RegexValidator( regex = '^9\d{9}$', message ="Phone number must be entered in the format 9999999999. Up to 10 digits allowed.")
     phone = models.CharField('Phone number',validators =[phone_regex], max_length=14, unique=True,null=True)
     email = models.EmailField(_('email address'), unique=True)
     REQUIRED_FIELDS = ['email', 'phone']
-
+    is_verified = models.BooleanField('verified', default=False, help_text='Designates whether this user has verified phone')
+    key = models.CharField(max_length=100, unique=True, blank=True)
+    is_seller = models.BooleanField(default=False)
 
 
     objects = UserManager()  
 
 
     def __str__(self):
-        return f'{self.phone} / {self.username}'     
+        return f'{self.phone} / {self.username}' 
+    
+    def authenticate(self, otp):
+        """ This method authenticates the given otp"""
+        provided_otp = 0
+        try:
+            provided_otp = int(otp)
+        except:
+            return False
+        #Here we are using Time Based OTP. The interval is 60 seconds.
+        #otp must be provided within this interval or it's invalid
+        t = pyotp.TOTP(self.key, interval=300)
+        return t.verify(provided_otp)    
 
 class Profile(models.Model):
     Male= 'male'
@@ -94,7 +110,6 @@ class Profile(models.Model):
     sexuality = models.CharField("select your gender", max_length=4, choices=STATUS, default=Male)
     image = models.ImageField("image of profile user",upload_to='uploads/profile', height_field=None, width_field=None, max_length=None, null=True, blank=True)
     updated_on = models.DateTimeField(auto_now=True)
-    is_seller = models.BooleanField(default=False)
     city = models.ForeignKey(City, verbose_name=_("where user is live"), on_delete=models.CASCADE, null=True, blank=True)
     
 

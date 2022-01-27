@@ -1,28 +1,144 @@
-<!DOCTYPE html>
-<html>
+{% load static %}
+<html lang="en">
+
 <head>
-    <meta charset="utf-8"/>
-    <title>Chat Rooms</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>chat room</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap-rtl.css' %}" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="{% static 'Scripts/jquery-1.10.2.min.js' %}"></script>
+    <script src="{% static 'Scripts/bootstrap-rtl.js' %}"></script>
 </head>
+
 <body>
 
-    {% for chat_room in chat_rooms %}
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 
 
-    <a href="http://localhost:8000/chat/{{ chat_room.roomname }}">{{chat_room.roomname}}</a>
-    <br>
+	{% if messages %}
+    {% for message in messages %}
+		{% if message.tags %}
+			<div class="alert alert-{{ message.tags }}alert-dismissible fade show" role="alert">
+		{% endif %}
+  			<strong> </strong> {{ message }}
+  			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    		<span aria-hidden="true">&times;</span>
+  			</button>
+			</div>
+	{% endfor %}
+	{% endif %}
 
-    {% endfor %}
+
+    <div class="headder">
+        <h1>{% block header %}{% endblock header %}</h1>
+    </div>
+    <div class="container">
+        <div id="header" class="row">
+            <nav class="navbar navbar-inverse navbar-fixed-top">
+                <div class="container-fluid">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                      <span class="sr-only">Toggle navigation</span>
+                      <span class="icon-bar"></span>
+                      <span class="icon-bar"></span>
+                      <span class="icon-bar"></span>
+                    </button>
+                        <a class="navbar-brand" href="{% url 'post_list' %}">بلاگ</a>
+                    </div>
+
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav">
+                            
+							
+							{% if user.is_authenticated %}
+                            <li><a href="{% url 'logout' %}">خارج شدن</a></li>
+                            <li><a href="{% url 'dashboard-shop' %}">فروشگاه</a></li>
+							{% else %}
+							{% endif %}
+                        </ul>
+                        <form class="navbar-form navbar-left" method=POST action="{% url 'chat-search' %}">
+							{% csrf_token %}
+                            <div class="form-group">
+                                <input type="search" class="form-control" name='searched' placeholder="جستجو کنید">
+                            </div>
+                            <button type="submit" class="btn btn-default">
+                          		<i class="glyphicon glyphicon-search"></i>
+                      		</button>
+                        </form>
+
+                    </div>
+                    <!-- /.navbar-collapse -->
+                </div>
+                <!-- /.container-fluid -->
+            </nav>
+        </div>
+        <div class="row" style="margin-top: 62px">
+
+            <div id="content" class="col-lg-8 col-md-9 col-sm-6 col-xs-12 pull-left">
+                {% if user.is_authenticated and user.username == '' %}
+                <div class='col-md-12 form-group'>
+                ایجاد چت روم جدید بدون فروشگاه :<br><br>
+                <input class="pull-left form-control" rows=20 cols=20 id="room-name-input" type="text"><br>
+                <input id="room-name-submit" type="button" value="ایجاد">
+            </div>
+            {% endif %}
+            <br>
+            <hr>
+
+
+                <div class="">
+                    <h3>چت روم ها :</h3>
+                    <hr>
+                </div>
 
 
 
 
+                    <div class="col-sm-12 col-md-12">
+                      <div class="thumbnail">
+                        <div class="list-group">
+                            <a href="#" class="list-group-item active">
+                              
+                            </a>
+                            {% for chat_room in chat_rooms %}
+                              <a href="http://localhost:8000/chat/{{ chat_room.roomname }}" class="list-group-item">
+                                <span class="badge"></span> {{ chat_room.roomname }}
+                              </a>
+                            {% endfor %}
+                            
+                          </div>
+                      </div>
+                    </div>
+                </div>
 
+            <div class="col-lg-4 col-md-3 col-sm-6 col-xs-12 pull-right" id="sidebar">
 
-    What chat room would you like to enter?<br>
-    <input id="room-name-input" type="text" size="100"><br>
-    <input id="room-name-submit" type="button" value="Enter">
+                <div class="list-group bg-dark">
+                    <div class="">
+                        <h3>چت روم های من :</h3>
+                        <hr>
+                    </div>
+                  
+                    {% for chat_room in my_chat_rooms %}
+                    <a href="http://localhost:8000/chat/{{ chat_room.roomname }}" style="color:red !important;" class="list-group-item">
+                        <h4 class="list-group-item-heading">{{ chat_room.roomname }}</h4>
+                        <p class="list-group-item-text"></p>
+                    </a>
+                    {% endfor %}
+                  
+                </div>
 
+            </div>
+
+        </div>
+        
+    </div>
+
+	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script>
         document.querySelector('#room-name-input').focus();
         document.querySelector('#room-name-input').onkeyup = function(e) {
@@ -36,5 +152,7 @@
             window.location.pathname = '/chat/' + roomName + '/';
         };
     </script>
+
 </body>
+{% include "messages.html" %}
 </html>

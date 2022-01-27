@@ -1,8 +1,8 @@
 from django import forms
-
-
-
 from .models import Picture, Product, Shop, Type, Category
+
+
+
 
 
 class ShopForm(forms.ModelForm):
@@ -14,6 +14,9 @@ class ShopForm(forms.ModelForm):
             'type': "نوع فروشگاه",
             'description': "توضیحات فروشگاه"
 		}
+
+
+
 
 
 class TypeForm(forms.ModelForm):
@@ -28,6 +31,8 @@ class TypeForm(forms.ModelForm):
 
 
 
+
+
 class CategoryForm(forms.ModelForm):
     forcefield = forms.CharField(
         required=False, widget=forms.HiddenInput(attrs={'value': 'c'}), label="")
@@ -39,6 +44,7 @@ class CategoryForm(forms.ModelForm):
         }  
         
     
+
 
 
 class ProductForm(forms.ModelForm):
@@ -60,6 +66,8 @@ class ProductForm(forms.ModelForm):
             'quantity': forms.NumberInput(attrs={'class': 'form-control'}),
 
         } 
+
+
 
 
 class PictureForm(forms.ModelForm):

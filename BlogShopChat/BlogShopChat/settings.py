@@ -43,20 +43,20 @@ INSTALLED_APPS = [
     'blog',
     'shop',
     'webservice',
-    #third party package for user registration and authentication endpoints 	
+    	
     'djoser',
     'django_filters',
 	
-    #rest API implementation library for django
+   
     'rest_framework',
 	
-	#JWT authentication backend library
+	
     'rest_framework_simplejwt',
     'crispy_forms',
     'widget_tweaks',
     'django_extensions',
     'channels',
-    'chat',
+    'chat.apps.ChatConfig',
 ]
 
 MIDDLEWARE = [
@@ -67,6 +67,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'accounts.middleware.UserVerifyMiddleware',
+    'shop.middleware.UserisSellerMiddleware'
 ]
 
 ROOT_URLCONF = 'BlogShopChat.urls'
@@ -139,8 +141,8 @@ AUTH_PASSWORD_VALIDATORS = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
@@ -202,7 +204,7 @@ GRAPPELLI_CLEAN_INPUT_TYPES = True
 # custom user 
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
-AUTHENTICATION_BACKENDS = ['accounts.backends.EmailBackend']
+AUTHENTICATION_BACKENDS = ['accounts.backends.OtpBackend','accounts.backends.EmailBackend']
 
 
 
