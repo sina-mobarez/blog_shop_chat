@@ -67,7 +67,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'accounts.middleware.UserVerifyMiddleware'
+    'accounts.middleware.UserVerifyMiddleware',
+    'shop.middleware.UserisSellerMiddleware'
 ]
 
 ROOT_URLCONF = 'BlogShopChat.urls'

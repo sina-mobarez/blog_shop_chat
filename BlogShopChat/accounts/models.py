@@ -74,6 +74,7 @@ class CustomUser(AbstractUser):
     REQUIRED_FIELDS = ['email', 'phone']
     is_verified = models.BooleanField('verified', default=False, help_text='Designates whether this user has verified phone')
     key = models.CharField(max_length=100, unique=True, blank=True)
+    is_seller = models.BooleanField(default=False)
 
 
     objects = UserManager()  
@@ -109,7 +110,6 @@ class Profile(models.Model):
     sexuality = models.CharField("select your gender", max_length=4, choices=STATUS, default=Male)
     image = models.ImageField("image of profile user",upload_to='uploads/profile', height_field=None, width_field=None, max_length=None, null=True, blank=True)
     updated_on = models.DateTimeField(auto_now=True)
-    is_seller = models.BooleanField(default=False)
     city = models.ForeignKey(City, verbose_name=_("where user is live"), on_delete=models.CASCADE, null=True, blank=True)
     
 

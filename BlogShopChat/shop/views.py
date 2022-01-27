@@ -17,6 +17,7 @@ from django.views.generic import ListView
 from django.views.generic.base import TemplateView, View
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from .permissions import IsSellerMixin
 
 from .forms import *
 from .models import *
@@ -25,7 +26,7 @@ from .models import *
 
 
 @method_decorator(login_required, name='dispatch')
-class Dashboard(ListView):
+class Dashboard(IsSellerMixin, ListView):
     template_name = "dashboard-shop.html"
     context_object_name = 'shop'
     paginate_by = 3
@@ -52,7 +53,7 @@ class Dashboard(ListView):
 
 
 @method_decorator(login_required, name='dispatch')
-class CategoryDetail(DetailView):
+class CategoryDetail(IsSellerMixin, DetailView):
 
     model = Category
     context_object_name = 'categories'
@@ -70,7 +71,7 @@ class CategoryDetail(DetailView):
 
 
 @method_decorator(login_required, name='dispatch')
-class TypeDetail(DetailView):
+class TypeDetail(IsSellerMixin, DetailView):
 
     model = Type
     context_object_name = 'type'
@@ -87,7 +88,7 @@ class TypeDetail(DetailView):
 
 
 @method_decorator(login_required, name='dispatch')
-class DeleteCategory(DeleteView):
+class DeleteCategory(IsSellerMixin, DeleteView):
     model = Category
     template_name = 'delete_category.html'
     success_url = reverse_lazy('add-type-category')
@@ -97,7 +98,7 @@ class DeleteCategory(DeleteView):
 
 
 @method_decorator(login_required, name='dispatch')
-class DeleteType(DeleteView):
+class DeleteType(IsSellerMixin, DeleteView):
     model = Type
     template_name = 'delete_type.html'
     success_url = reverse_lazy('add-type-category')
@@ -108,7 +109,7 @@ class DeleteType(DeleteView):
 
 
 @method_decorator(login_required, name='dispatch')
-class EditCategory(UpdateView):
+class EditCategory(IsSellerMixin, UpdateView):
     model = Category
     fields = ['name',]
     template_name = 'edit_category.html'
@@ -121,7 +122,7 @@ class EditCategory(UpdateView):
 
 
 @method_decorator(login_required, name='dispatch')
-class EditType(UpdateView):
+class EditType(IsSellerMixin, UpdateView):
     model = Type
     fields = ['name',]
     template_name = 'edit_type.html'
@@ -134,7 +135,7 @@ class EditType(UpdateView):
 
 
 @method_decorator(login_required, name='dispatch')
-class ShopDetail(DetailView):
+class ShopDetail(IsSellerMixin, DetailView):
     model = Shop
     context_object_name = 'shop'
     template_name = "shop_detail.html"
@@ -201,7 +202,7 @@ def shop_no_pending_required(function=None, redirect_field_name=REDIRECT_FIELD_N
 
 
 @method_decorator(shop_no_pending_required(redirect_url='dashboard-shop'), name='dispatch')
-class CreateShop(CreateView):
+class CreateShop(IsSellerMixin, CreateView):
     form_class = ShopForm
     template_name = 'create_shop.html'
     success_url = reverse_lazy('dashboard-shop')
@@ -226,7 +227,7 @@ class CreateShop(CreateView):
 
 
 @method_decorator(login_required, name='dispatch')
-class DeleteShop(UpdateView):
+class DeleteShop(IsSellerMixin, UpdateView):
     model = Shop
     fields = ['name', 'type']
     template_name = 'delete_shop.html'
@@ -244,7 +245,7 @@ class DeleteShop(UpdateView):
 
 
 @method_decorator(login_required, name='dispatch')
-class UpdateShop(UpdateView):
+class UpdateShop(IsSellerMixin, UpdateView):
     model = Shop
     fields = ['name', 'type', 'description']
     template_name = 'update_shop.html'
@@ -264,7 +265,7 @@ class UpdateShop(UpdateView):
 
 
 @method_decorator(login_required, name='dispatch')
-class AddTypeCategory(View):
+class AddTypeCategory(IsSellerMixin, View):
     category_form = CategoryForm()
     type_form = TypeForm()
     category = Category.objects.all() 
@@ -340,7 +341,7 @@ def add_product(request, slug):
 
 
 @method_decorator(login_required, name='dispatch')
-class ProductDetail(DetailView):
+class ProductDetail(IsSellerMixin, DetailView):
     model = Product
     context_object_name = 'product'
     template_name = "product-detail.html"
@@ -361,7 +362,7 @@ class ProductDetail(DetailView):
 
 
 @method_decorator(login_required, name='dispatch')
-class Editproduct(UpdateView):
+class Editproduct(IsSellerMixin, UpdateView):
     model = Product
     fields = ['name', 'description', 'price', 'quantity']
     template_name = 'update_product.html'
@@ -371,7 +372,7 @@ class Editproduct(UpdateView):
 
 
 @method_decorator(login_required, name='dispatch')
-class DeleteProdcut(DeleteView):
+class DeleteProdcut(IsSellerMixin, DeleteView):
     model = Product
     template_name = 'delete_product.html'
     success_url = reverse_lazy('dashboard-shop')
@@ -381,7 +382,7 @@ class DeleteProdcut(DeleteView):
 
 
 @method_decorator(login_required, name='dispatch')
-class CartDetail(DetailView):
+class CartDetail(IsSellerMixin, DetailView):
     model = Cart
     context_object_name = 'cart'
     template_name = "cart-detail.html"
@@ -432,7 +433,7 @@ class CartDetail(DetailView):
 
 
 @method_decorator(login_required, name='dispatch')
-class SearchByDate(View):
+class SearchByDate(IsSellerMixin, View):
     def post(self, request, *args, **kwargs):
         shop = kwargs['slug']
         start = request.POST.get('startdate', None)
@@ -479,9 +480,14 @@ class LandingPage(TemplateView):
 
 
 
+class NotpermissionOr404(TemplateView):
+
+    template_name = "404.html"
 
 
-class ReportSale(ListView):
+
+
+class ReportSale(IsSellerMixin, ListView):
     template_name = "report.html"
     context_object_name = 'report'
     

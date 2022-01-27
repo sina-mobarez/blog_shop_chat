@@ -14,7 +14,7 @@ class CustomUserAdmin(BaseUserAdmin):
 
     add_form = CustomUserCreationForm
     model = User
-    list_display = ('username','email','phone', 'is_staff', 'is_active','is_verified')
+    list_display = ('username','email','phone', 'is_staff', 'is_active','is_verified', 'is_seller')
     list_filter = ('username','email','phone','is_staff', 'is_active',)
     fieldsets = (
         (None, {'fields': ('email', 'password',),}),
@@ -36,11 +36,17 @@ class CustomUserAdmin(BaseUserAdmin):
 
 
 
+class ProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'image', 'sexuality', 'age','description',)
+    list_filter = ('sexuality',)
+    search_fields = ('age',)
+
+
 
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(City)
 admin.site.register(Country)
-admin.site.register(Profile)
+admin.site.register(Profile, ProfileAdmin)
 
 
 

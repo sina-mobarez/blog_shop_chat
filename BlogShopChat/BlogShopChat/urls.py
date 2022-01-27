@@ -5,9 +5,9 @@ from drf_yasg import openapi
 from django.contrib import admin
 from django.contrib.staticfiles.urls import static
 from django.urls import path, include
-from accounts.views import LoginView, RegisterUser, RegisterView, VerifyView, ResendVerifyView, LoginUser
 from . import settings
-from shop.views import LandingPage
+from accounts.views import LoginView, RegisterUser, RegisterView, VerifyView, ResendVerifyView, LoginUser
+from shop.views import LandingPage, NotpermissionOr404
 from chat.views import search
 
 
@@ -50,6 +50,8 @@ urlpatterns = [
 
                   path('accounts/', include('django.contrib.auth.urls')),
                   path('', LandingPage.as_view(), name='landing-page'),
+                  path('stop/', NotpermissionOr404.as_view(), name='not-permission'),
+                  
                    
                   url(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 
