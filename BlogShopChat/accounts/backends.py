@@ -41,14 +41,14 @@ class OtpBackend(ModelBackend):
                 if user_is_verified(user):
                     return user
             else:
-                raise AuthenticationError('Password is wrong')
-        try:   
-            if user.authenticate(password):
-                return user
-            else:
-                raise AuthenticationError('your OTP has been expired')
-        except AuthenticationError:
-            return None
+                
+                try:   
+                    if user.authenticate(password):
+                        return user
+                    else:
+                        raise AuthenticationError('your OTP has been expired')
+                except AuthenticationError:
+                    return None
                 
                 
 
