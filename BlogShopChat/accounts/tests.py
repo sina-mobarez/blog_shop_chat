@@ -1,5 +1,6 @@
 
 import pdb
+import pyotp
 from rest_framework.test import APITestCase
 from django.urls import reverse
 from rest_framework import status
@@ -66,10 +67,20 @@ class TestLoginRegisterVerifyGetCode(APITestCase):
     
     
     def test_user_can_verify_phone_number(self):
-        self.client.post(self.register_url, self.user_data_register, format="json")
-        res = self.client.post(self.verify_phone_number_url, data={'phone': '9901232121', 'otp_code': '125698'}, format='json')
+        user = CustomUser.objects.create(username='sina', password='qwe123123', phone='9901472585')
+        self.client.post(self.get_code_for_verify_phone_number_url, data={'phone': '9901472585'}, format='json')
+        time_otp = pyotp.TOTP(user.key, interval=300)
+        time_otp = time_otp.now()
+        res = self.client.post(self.verify_phone_number_url, data={'phone': '9901472585', 'otp_code': time_otp}, format='json')
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        
+        
+    def test_user_can_verify_phone_number_by_wrong_otp(self):
+        user = CustomUser.objects.create(username='sina', password='qwe123123', phone='9901472585')
+        self.client.post(self.get_code_for_verify_phone_number_url, data={'phone': '9901472585'}, format='json')
+        time_otp = pyotp.TOTP(user.key, interval=300)
+        time_otp = time_otp.now()
+        res = self.client.post(self.verify_phone_number_url, data={'phone': '9901472585', 'otp_code': '452365'}, format='json')
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(res.data['detail'], 'The provided code did not match or has expired')
-        
-        
-        
