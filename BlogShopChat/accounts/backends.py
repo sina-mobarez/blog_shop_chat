@@ -16,7 +16,7 @@ class UserNotVerified(Exception):
 
 
 
-def user_is_verified(self, user):
+def user_is_verified(user):
     is_verified = getattr(user, 'is_verified', None)
     return is_verified or is_verified is None
 

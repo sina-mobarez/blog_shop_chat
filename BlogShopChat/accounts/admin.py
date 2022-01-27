@@ -18,7 +18,7 @@ class CustomUserAdmin(BaseUserAdmin):
     list_filter = ('username','email','phone','is_staff', 'is_active',)
     fieldsets = (
         (None, {'fields': ('email', 'password',),}),
-        ('Permissions', {'fields': ('is_staff', 'is_active', 'is_verified')}),
+        ('Permissions', {'fields': ('is_staff', 'is_active', 'is_verified','is_seller')}),
     )
     add_fieldsets = (
         (None, {
