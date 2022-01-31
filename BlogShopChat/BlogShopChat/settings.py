@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -23,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-y#sb+1h6zf4j4893kb=8b*4iy2#z8k#5-)0wbkx#a+hvmf6m95'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['bchavcut-bchavcut.fandogh.cloud',]
 
 
 # Application definition
@@ -111,10 +112,10 @@ CHANNEL_LAYERS = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'finalproject', 
+        'NAME': 'blog_shop_chat', 
         'USER': 'postgres', 
         'PASSWORD': 'QWT67P53',
-        'HOST': '127.0.0.1', 
+        'HOST': 'mydatabase', 
         'PORT': '5432',
     }
 }
@@ -172,6 +173,8 @@ BASE_DIR / 'static',
 
 MEDIA_ROOT =  str(BASE_DIR /'media')
 MEDIA_URL = '/media/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static_root/')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
