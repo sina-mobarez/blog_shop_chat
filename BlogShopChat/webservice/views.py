@@ -1,6 +1,5 @@
 from rest_framework import generics, mixins, status
 from django.shortcuts import get_object_or_404
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 
 
 from rest_framework.generics import ListCreateAPIView

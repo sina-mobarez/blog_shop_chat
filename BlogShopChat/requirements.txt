@@ -36,6 +36,7 @@ incremental==21.3.0
 inflection==0.5.1
 itypes==1.2.0
 Jinja2==3.0.3
+kavenegar==1.1.2
 MarkupSafe==2.0.1
 model-mommy==2.0.0
 msgpack==1.0.3

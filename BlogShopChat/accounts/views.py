@@ -14,7 +14,6 @@ from rest_framework_simplejwt.tokens import AccessToken
 from accounts.models import CustomUser
 from webservice.serializers import UserModelLoginSerializer, UserModelSerializer
 
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
 
 from django.db import IntegrityError
 from .forms import LoginForm, CustomUserCreationForm
@@ -152,7 +151,7 @@ class ResendVerifyView(VerifyMixin, View):
             token = self.set_token
             self.set_token_to_db(phone=phone, token=token)
             
-            # send_sms(receptor=phone, token=token)
+            send_sms(receptor=phone, token=token)
             print('========== OTP:',token)
             
         return HttpResponseRedirect(reverse_lazy('verify'))
@@ -201,7 +200,7 @@ class RegisterUser(APIView):
                 )
                 
             print('========== OTP:',time_otp)
-            # send_sms(receptor=account.phone, token=time_otp)
+            send_sms(receptor=account.phone, token=time_otp)
             
             return Response(data, status=status.HTTP_201_CREATED)
         except IntegrityError as e:
@@ -313,7 +312,7 @@ class GetCodeForVerify(APIView):
                 time_otp = pyotp.TOTP(Account.key, interval=300)
                 time_otp = time_otp.now()
                 
-                # send_sms(receptor=phone, token=time_otp)
+                send_sms(receptor=phone, token=time_otp)
                 print('=========== otp : ', time_otp)
                 
                 return Response(dict(detail = "Verification Code sent to your Number"),status=200)
