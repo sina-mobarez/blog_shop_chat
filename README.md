@@ -50,11 +50,17 @@ Run the App:
 ```python manage.py runserver```
 
 Features:
+
 CMS
+
 Panel store for sell
+
 Api for customers
+
 Blog
+
 Chat application (for every store created and confirmed by admin set a chatroom for comunicate between store keeper and it's customers)
+
 2fa for user, send a verification code and verify phone number
 
 
