@@ -57,8 +57,4 @@ Blog
 Chat application (for every store created and confirmed by admin set a chatroom for comunicate between store keeper and it's customers)
 2fa for user, send a verification code and verify phone number
 
-### ------------------------------------
-
-
-![Screenshot](https://github.com/sina-mobarez/Maktab-60/blob/master/Cw/Cw10/Screenshot%20from%202022-01-31%2009-25-20.png?raw=true)
 
