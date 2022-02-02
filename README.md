@@ -49,7 +49,7 @@ Create super user:
 Run the App:
 ```python manage.py runserver```
 
-Features:
+### Features:
 
 CMS
 
