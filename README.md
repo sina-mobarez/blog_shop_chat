@@ -60,5 +60,5 @@ Chat application (for every store created and confirmed by admin set a chatroom 
 ### ------------------------------------
 
 
-![alt text](https://github.com/sina-mobarez/Maktab-60/blob/master/Cw/Cw10/Screenshot%20from%202022-01-31%2009-25-20.png?raw=true)
+![Screenshot](https://github.com/sina-mobarez/Maktab-60/blob/master/Cw/Cw10/Screenshot%20from%202022-01-31%2009-25-20.png?raw=true)
 
